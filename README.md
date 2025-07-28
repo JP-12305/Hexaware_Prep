@@ -2,17 +2,6 @@
 
 Learn Axis is a full-stack MERN application designed to provide personalized learning paths and skill-gap analysis for employees within an enterprise. It leverages a microservice architecture with a dedicated Python AI agent to automate content creation and, in the future, assessment and personalization.
 
-## Features
-
-* **User Authentication:** Secure login and signup for learners and administrators.
-* **Role-Based Access Control:** Distinct dashboards and capabilities for Admins and Learners.
-* **Admin Console:** A full-featured dashboard for managing users, departments, roles, and courses.
-* **Content Management System (CMS):** Admins can define the structure of courses.
-* **AI-Powered Content Generation:**
-    * **Course Generation:** An AI agent creates entire course structures (name, description, modules) based on a target role.
-    * **Content Curation:** An AI agent finds and embeds relevant articles and videos for each learning module.
-* **Learner Dashboard:** A personalized dashboard for learners to view their assigned courses, track progress, and access learning materials.
-
 ## Tech Stack
 
 * **Frontend:** React.js
