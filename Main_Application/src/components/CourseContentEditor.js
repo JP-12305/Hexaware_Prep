@@ -1,9 +1,7 @@
-// src/CourseContentEditor.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminDashboard.css';
-import './ManageUserPage.css'; // For some shared styles
+import './ManageUserPage.css';
 
 const CourseContentEditor = () => {
     const [course, setCourse] = useState(null);

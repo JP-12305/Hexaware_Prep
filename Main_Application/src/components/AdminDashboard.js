@@ -34,7 +34,7 @@ const AdminDashboard = () => {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             await axios.delete(`http://localhost:5001/api/admin/users/${userId}`, config);
             alert('User deleted successfully.');
-            fetchUsers(); // Re-fetch users to update the list
+            fetchUsers(); 
         } catch (err) {
             alert('Failed to delete user.');
         }
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
         <header className="dashboard-header">
           <h1>Admin Console</h1>
-          <div> {/* Wrapper for buttons */}
+          <div> 
               <button 
                   onClick={() => window.location.href = '/admin/content'} 
                   className="analytics-button" style={{backgroundColor: '#16a085'}}>
@@ -100,7 +100,7 @@ const AdminDashboard = () => {
                               onClick={() => window.location.href = `/admin/user/${user._id}`}>
                               Manage
                             </button>
-                            {/* ADD THIS NEW BUTTON */}
+                            
                             <button 
                               className="action-button analytics-nav-button"
                               onClick={() => window.location.href = `/admin/analytics/${user._id}`}>

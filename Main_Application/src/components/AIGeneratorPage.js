@@ -1,8 +1,6 @@
-// src/AIGeneratorPage.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ManageUserPage.css'; // Reuse styles
+import './ManageUserPage.css';
 
 const AIGeneratorPage = () => {
     const [departments, setDepartments] = useState([]);

@@ -75,11 +75,8 @@ router.delete('/users/:id', protect, admin, async (req, res) => {
 // @access  Private/Admin
 router.post('/users/:id/assign-course', protect, admin, async (req, res) => {
     const { courseName } = req.body;
-    
-    // --- START DEBUG LOGGING ---
     console.log('--- Assign Course Request Received ---');
     console.log(`Attempting to assign course "${courseName}" to user ID: ${req.params.id}`);
-    // --- END DEBUG LOGGING ---
 
     try {
         const user = await User.findById(req.params.id);
@@ -129,7 +126,7 @@ router.delete('/users/:id/assign-course', protect, admin, async (req, res) => {
         }
         user.currentCourse = 'None';
         user.learningProgress = 0;
-        user.assignedTasks = []; // Also clear the tasks
+        user.assignedTasks = []; 
         await user.save();
         res.json(user);
     } catch (err) {
@@ -167,8 +164,6 @@ router.delete('/users/:userId/tasks/:taskId', protect, admin, async (req, res) =
             return res.status(404).json({ msg: 'User not found' });
         }
         user.assignedTasks.pull({ _id: req.params.taskId });
-        
-        // Recalculate progress after removing a task
         const totalTasks = user.assignedTasks.length;
         const completedTasks = user.assignedTasks.filter(t => t.completed).length;
         user.learningProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;

@@ -1,9 +1,7 @@
-// src/AnalyticsDashboard.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import './AdminDashboard.css'; // We can reuse the main admin CSS
+import './AdminDashboard.css';
 
 const AnalyticsDashboard = () => {
     const [analyticsData, setAnalyticsData] = useState(null);
@@ -29,7 +27,6 @@ const AnalyticsDashboard = () => {
     if (loading) return <div className="dashboard-loading"><h1>Loading Analytics...</h1></div>;
     if (error) return <div className="dashboard-loading"><h1 style={{color: 'red'}}>{error}</h1></div>;
 
-    // Prepare data for charts
     const deptUserData = analyticsData.usersByDepartment.map(item => ({ name: item._id, Users: item.count }));
     const deptProgressData = analyticsData.avgProgressByDept.map(item => ({ name: item._id, 'Avg Progress': Math.round(item.avgProgress) }));
 
@@ -40,7 +37,6 @@ const AnalyticsDashboard = () => {
                 <button onClick={() => window.location.href = '/admin'} className="back-button-analytics">Back to User List</button>
             </header>
             <main className="dashboard-main analytics-main">
-                {/* Key Metrics Cards */}
                 <div className="analytics-cards-container">
                     <div className="analytics-card">
                         <h2>Total Users</h2>
@@ -52,7 +48,6 @@ const AnalyticsDashboard = () => {
                     </div>
                 </div>
 
-                {/* Charts */}
                 <div className="charts-container">
                     <div className="chart-wrapper">
                         <h3>Users per Department</h3>

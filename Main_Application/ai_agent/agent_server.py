@@ -15,7 +15,6 @@ CORS(app)
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
-# This route generates the high-level course structure
 @app.route('/generate-course', methods=['POST'])
 def generate_course():
     try:
@@ -29,7 +28,7 @@ def generate_course():
         The response must be a valid JSON object with keys "name", "description", and "modules".
         "modules" must be an array of 3-5 objects, each with a "title" key.
         """
-        # ... (rest of the function from the previous guide)
+
         response = model.generate_content(prompt)
         cleaned_response = response.text.strip().replace("```json", "").replace("```", "")
         json.loads(cleaned_response)
@@ -39,7 +38,7 @@ def generate_course():
         print(f"An error occurred in /generate-course: {e}")
         return jsonify({"error": "Failed to generate course structure"}), 500
 
-# --- ADD THIS NEW ROUTE ---
+
 # This route finds specific learning materials for a single module
 @app.route('/generate-module-content', methods=['POST'])
 def generate_module_content():
@@ -75,7 +74,6 @@ def generate_module_content():
         response = model.generate_content(prompt)
         cleaned_response = response.text.strip().replace("```json", "").replace("```", "")
         
-        # Validate that the response is valid JSON before sending
         json.loads(cleaned_response)
         
         return cleaned_response, 200, {'Content-Type': 'application/json'}
@@ -83,7 +81,6 @@ def generate_module_content():
     except Exception as e:
         print(f"An error occurred in /generate-module-content: {e}")
         return jsonify({"error": "Failed to generate module content"}), 500
-# --- END NEW ROUTE ---
 
 
 if __name__ == '__main__':

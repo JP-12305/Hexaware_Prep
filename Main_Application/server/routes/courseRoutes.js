@@ -1,39 +1,32 @@
-// server/routes/courseRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const Course = require('../models/Course');
 const { protect, admin } = require('../middleware/authMiddleware');
 const axios = require('axios');
 
-// MODIFIED: This route now generates and creates the course in one go
 // @route   POST /api/courses/generate
 // @desc    Generate and create a new course using AI
 // @access  Private/Admin
 router.post('/generate', protect, admin, async (req, res) => {
     const { targetDepartment, targetRole } = req.body;
     try {
-        // --- Call the Python AI Agent ---
         const aiAgentUrl = 'http://localhost:5002/generate-course';
         const payload = { target_role: targetRole };
         const agentResponse = await axios.post(aiAgentUrl, payload);
         
-        // --- START DEBUG LOGGING ---
         console.log("--- Response from Python AI Agent ---");
         console.log("Status:", agentResponse.status);
         console.log("Data:", JSON.stringify(agentResponse.data, null, 2));
-        // --- END DEBUG LOGGING ---
+        
 
         const { name, description, modules } = agentResponse.data;
 
-        // --- ADDED VALIDATION ---
         if (!modules || !Array.isArray(modules) || modules.length === 0) {
             console.error("ERROR: AI agent did not return a valid 'modules' array.");
             return res.status(500).send('AI agent failed to generate course modules.');
         }
-        // --- END VALIDATION ---
+        
 
-        // Create the new course with AI-generated content
         const newCourse = new Course({
             name,
             description,
@@ -68,7 +61,6 @@ router.get('/:id', protect, admin, async (req, res) => {
     }
 });
 
-// Get all courses (existing route)
 router.get('/', protect, admin, async (req, res) => {
     try {
         const courses = await Course.find().sort({ createdAt: -1 });
@@ -79,7 +71,6 @@ router.get('/', protect, admin, async (req, res) => {
     }
 });
 
-// Delete a course (existing route)
 router.delete('/:id', protect, admin, async (req, res) => {
     try {
         const course = await Course.findById(req.params.id);
@@ -109,14 +100,12 @@ router.post('/:courseId/modules/:moduleId/generate-content', protect, admin, asy
             return res.status(404).json({ msg: 'Module not found' });
         }
 
-        // Call the Python AI Agent's new endpoint
         const aiAgentUrl = 'http://localhost:5002/generate-module-content';
         const payload = { module_title: module.title };
         const agentResponse = await axios.post(aiAgentUrl, payload);
         
         const { summary, articles, video } = agentResponse.data;
 
-        // Update the module with the AI-generated content
         module.summary = summary;
         module.articles = articles;
         module.video = video;

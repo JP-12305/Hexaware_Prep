@@ -1,5 +1,3 @@
-/* src/AdminDashboard.css */
-
 .admin-dashboard {
     display: flex;
     flex-direction: column;
@@ -104,7 +102,6 @@
     height: 100vh;
 }
 
-/* --- Modal Styles --- */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -125,7 +122,6 @@
     width: 90%;
     max-width: 500px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    /* MODIFIED: Fix for modal overflow */
     max-height: 90vh;
     overflow-y: auto;
 }
@@ -154,7 +150,6 @@
     box-sizing: border-box;
     margin-bottom: 1rem;
     font-size: 1rem;
-    /* MODIFIED: Custom dropdown styling */
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -165,7 +160,6 @@
     background-size: 16px 12px;
 }
 
-/* Ensure date input doesn't have custom arrow */
 .modal-section input[type="date"] {
     background-image: none;
 }
@@ -202,15 +196,15 @@
 
 .action-buttons-container {
     display: flex;
-    gap: 0.5rem; /* Adds space between buttons */
+    gap: 0.5rem; 
 }
 
 .delete-button {
-    background-color: #992013; /* A red color for delete */
+    background-color: #992013;
 }
 
 .delete-button:hover {
-    background-color: #c0392b; /* A darker red on hover */
+    background-color: #c0392b;
 }
 
 .user-table th, .user-table td {
@@ -240,7 +234,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-right: 1rem; /* Add some space */
+    margin-right: 1rem; 
 }
 
 .back-button-analytics {
@@ -304,7 +298,7 @@
 }
 
 .analytics-nav-button {
-    background-color: #f39c12; /* Orange color for analytics */
+    background-color: #f39c12; 
 }
 .analytics-nav-button:hover {
     background-color: #e67e22;

@@ -13,10 +13,10 @@ const ModuleSchema = new mongoose.Schema({
         title: String,
         youtube_id: String
     },
-    content: String, // AI-generated content will go here
+    content: String, 
     assessment: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Assessment' // We can create this model later
+        ref: 'Assessment' 
     }
 });
 

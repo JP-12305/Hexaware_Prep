@@ -1,5 +1,3 @@
-// server/routes/auth.js
-
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -12,13 +10,12 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   const { username, email, empId, password } = req.body;
 
-  // --- START DEBUG LOGGING ---
   console.log('--- Registration Attempt Received ---');
   console.log('Username:', username);
   console.log('Email:', email);
   console.log('Emp ID:', empId);
   console.log('Password to be hashed:', password);
-  // --- END DEBUG LOGGING ---
+  
 
   try {
     let user = await User.findOne({ email });
@@ -29,7 +26,7 @@ router.post('/register', async (req, res) => {
 
     user = new User({ username, email, empId, password });
 
-    const salt = await bcrypt.genSalt(10); //encryption
+    const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
     console.log('DEBUG: Password hashed successfully.');
 
@@ -51,11 +48,10 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { identifier, password } = req.body;
     
-    // --- START DEBUG LOGGING ---
     console.log('--- Login Attempt Received ---');
     console.log('Identifier:', identifier);
     console.log('Password received:', password ? 'Yes' : 'No');
-    // --- END DEBUG LOGGING ---
+
 
     try {
         let user = await User.findOne({

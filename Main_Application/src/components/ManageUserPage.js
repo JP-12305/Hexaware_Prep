@@ -1,5 +1,3 @@
-// src/ManageUserPage.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ManageUserPage.css';
@@ -7,12 +5,12 @@ import './ManageUserPage.css';
 const ManageUserPage = () => {
     const [user, setUser] = useState(null);
     const [departments, setDepartments] = useState([]);
-    const [allCourses, setAllCourses] = useState([]); // All courses from the DB
-    const [filteredCourses, setFilteredCourses] = useState([]); // Courses filtered by role/dept
+    const [allCourses, setAllCourses] = useState([]); 
+    const [filteredCourses, setFilteredCourses] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // State for the editable fields
+    
     const [role, setRole] = useState('');
     const [department, setDepartment] = useState('');
     const [availableRoles, setAvailableRoles] = useState([]);
@@ -47,7 +45,6 @@ const ManageUserPage = () => {
         fetchData();
     }, [userId]);
 
-    // This effect updates the list of available roles when the department changes
     useEffect(() => {
         const selectedDept = departments.find(d => d.name === department);
         if (selectedDept) {
@@ -60,14 +57,12 @@ const ManageUserPage = () => {
         }
     }, [department, departments, role]);
 
-    // --- NEW: This effect filters courses based on the selected department and role ---
     useEffect(() => {
         if (department && role) {
             const relevantCourses = allCourses.filter(course => 
                 course.targetDepartment === department && course.targetRole === role
             );
             setFilteredCourses(relevantCourses);
-            // Set the default selection to the first available course, or none if empty
             setCourseName(relevantCourses.length > 0 ? relevantCourses[0].name : '');
         }
     }, [department, role, allCourses]);
@@ -144,7 +139,7 @@ const ManageUserPage = () => {
                 <button onClick={() => window.location.href = '/admin'} className="back-button">Back to Dashboard</button>
             </header>
             <main className="manage-user-main">
-                {/* User Details & Role Management Card */}
+                
                 <div className="card">
                     <h3>User Details & Role</h3>
                     <div className="form-group">
@@ -162,7 +157,7 @@ const ManageUserPage = () => {
                     <button onClick={handleSaveChanges} className="action-button">Save Changes</button>
                 </div>
 
-                {/* Course Management Card */}
+                
                 <div className="card">
                     <h3>Course Management</h3>
                     <div className="form-group">
@@ -182,7 +177,7 @@ const ManageUserPage = () => {
                     </div>
                 </div>
 
-                {/* Scheduled Tasks Card */}
+                
                 <div className="card">
                     <h3>Scheduled Tasks</h3>
                     <ul className="task-list">
@@ -201,7 +196,7 @@ const ManageUserPage = () => {
                     </ul>
                 </div>
                 
-                {/* Progress & Reporting Card */}
+                
                 <div className="card">
                     <h3>Progress & Reporting</h3>
                     <div className="course-info">
@@ -217,7 +212,7 @@ const ManageUserPage = () => {
                     <button onClick={handleGenerateReport} className="action-button">Generate Report</button>
                 </div>
                 
-                {/* Completed Course History Card */}
+                
                 <div className="card">
                     <h3>Completed Course History</h3>
                     <ul className="task-list">
@@ -235,7 +230,7 @@ const ManageUserPage = () => {
                     </ul>
                 </div>
 
-                {/* AI Agent Integration Card */}
+                
                 <div className="card ai-card">
                    <h3>AI Learning Assistant (Gemini)</h3>
                     <p>Use AI to generate a personalized learning path based on the user's role and department.</p>

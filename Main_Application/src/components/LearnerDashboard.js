@@ -1,8 +1,6 @@
-// src/LearnerDashboard.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './LearnerDashboard.css'; // A new CSS file for this page
+import './LearnerDashboard.css';
 
 const LearnerDashboard = () => {
     const [user, setUser] = useState(null);
@@ -71,7 +69,6 @@ const LearnerDashboard = () => {
             <main className="learner-main">
                 <h2>WELCOME {user?.username?.toUpperCase()},</h2>
                 
-                {/* MODIFIED: Conditional rendering for modules */}
                 <div className="modules-container">
                     {dashboardData?.assignedTasks && dashboardData.assignedTasks.length > 0 ? (
                         dashboardData.assignedTasks.map((task, index) => (

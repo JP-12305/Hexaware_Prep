@@ -1,5 +1,3 @@
-// src/LoginForm.js
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { EyeIcon, EyeOffIcon } from './Icons';
@@ -33,12 +31,11 @@ const LoginForm = ({ onSwitchToSignup }) => {
       };
 
       try {
-        // MODIFIED: Use the full URL for the API call
         const { data } = await axios.post('http://localhost:5001/api/auth/login', userCredentials);
         
         localStorage.setItem('userInfo', JSON.stringify(data));
 
-        alert('Login successful!');
+        // alert('Login successful!');
         
         if (data.user.role === 'admin') {
           window.location.href = '/admin';

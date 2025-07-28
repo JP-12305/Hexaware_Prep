@@ -1,4 +1,3 @@
-// src/App.js
 
 import React from 'react';
 import './App.css';
@@ -13,7 +12,7 @@ import UserAnalyticsPage from './components/UserAnalyticsPage';
 import ContentManager from './components/ContentManager';
 import CourseEditor from './components/CourseEditor';
 import AIGeneratorPage from './components/AIGeneratorPage';
-import CourseContentEditor from './components/CourseContentEditor';// <-- IMPORT NEW PAGE
+import CourseContentEditor from './components/CourseContentEditor';
 
 
 const App = () => {

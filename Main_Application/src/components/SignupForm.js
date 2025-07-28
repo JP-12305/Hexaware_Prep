@@ -1,5 +1,3 @@
-// src/SignupForm.js
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { EyeIcon, EyeOffIcon } from './Icons';
@@ -52,11 +50,9 @@ const SignupForm = ({ onSwitchToLogin }) => {
       };
 
       try {
-        // MODIFIED: Use the full URL for the API call
         const res = await axios.post('http://localhost:5001/api/auth/register', newUser);
         console.log(res.data);
-        alert('Signup successful! Please log in.');
-        onSwitchToLogin(); // Switch to login form on success
+        onSwitchToLogin();
       } catch (err) {
         console.error(err.response ? err.response.data : err.message);
         alert('Error during signup: ' + (err.response ? err.response.data.msg : 'Registration failed.'));

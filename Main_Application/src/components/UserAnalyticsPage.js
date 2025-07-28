@@ -1,9 +1,7 @@
-// src/UserAnalyticsPage.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import './AdminDashboard.css'; // Reuse styles
+import './AdminDashboard.css';
 
 const UserAnalyticsPage = () => {
     const [userData, setUserData] = useState(null);
