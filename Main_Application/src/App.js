@@ -5,30 +5,58 @@ import './App.css';
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
 import AdminDashboard from './components/AdminDashboard';
+import ManageUserPage from './components/ManageUserPage';
+import LearnerDashboard from './components/LearnerDashboard';
+import TaskDetailPage from './components/TaskDetailPage';
+import AnalyticsDashboard from './components/AnalyticsDashboard'; 
+import UserAnalyticsPage from './components/UserAnalyticsPage';
+import ContentManager from './components/ContentManager';
+import CourseEditor from './components/CourseEditor';
+import AIGeneratorPage from './components/AIGeneratorPage';
+import CourseContentEditor from './components/CourseContentEditor';// <-- IMPORT NEW PAGE
 
-// A simple router component
+
 const App = () => {
   const path = window.location.pathname;
 
-  if (path === '/admin') {
-    return <AdminDashboard />;
-  }
-  
-  // For now, we'll need a placeholder for the learner dashboard
-  if (path === '/dashboard') {
-      return (
-          <div className="app-background">
-              <div className="card">
-                  <h1 className="title">Learner Dashboard</h1>
-                  <p>Welcome, Learner! Your content is coming soon.</p>
-              </div>
-          </div>
-      );
-  }
+    if (path.startsWith('/admin/analytics/')) {
+      return <UserAnalyticsPage />;
+    }
+    if (path === '/admin/content') {
+        return <ContentManager />;
+    }
+    if (path === '/admin/content/ai-generator') {
+      return <AIGeneratorPage />;
+    }
+    if (path === '/admin/content/new') {
+        return <CourseEditor />;
+    }
 
-  // Default to login/signup page. We can use a query param to switch.
+    if (path === '/admin/analytics') {
+        return <AnalyticsDashboard />;
+    }
+
+    if (path.startsWith('/admin/user/')) {
+      return <ManageUserPage />;
+    }
+
+    if (path.startsWith('/admin/content/editor/')) {
+    return <CourseContentEditor />;
+    }
+
+    if (path === '/admin') {
+      return <AdminDashboard />;
+    }
+    
+    if (path.startsWith('/dashboard/task/')) {
+        return <TaskDetailPage />;
+    }
+
+    if (path === '/dashboard') {
+        return <LearnerDashboard />;
+    }
+
   const isLoginView = !new URLSearchParams(window.location.search).has('signup');
-
   const switchToSignup = () => window.location.href = '/?signup=true';
   const switchToLogin = () => window.location.href = '/';
 

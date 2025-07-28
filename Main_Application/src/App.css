@@ -75,7 +75,7 @@ body {
   background-color: #cbd5e0;
   border-radius: 0.5rem;
   color: #2d3748;
-  border: none;
+  border: 1px solid #a0aec0;
   font-size: 1rem;
   box-sizing: border-box;
 }

@@ -1,6 +1,8 @@
+// src/SignupForm.js
+
 import React, { useState } from 'react';
 import axios from 'axios';
-import { EyeIcon, EyeOffIcon } from './Icons'; // Import icons
+import { EyeIcon, EyeOffIcon } from './Icons';
 
 const SignupForm = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
@@ -35,7 +37,11 @@ const SignupForm = ({ onSwitchToLogin }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => { // Make the function async
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
       const newUser = {
@@ -46,23 +52,16 @@ const SignupForm = ({ onSwitchToLogin }) => {
       };
 
       try {
-        // Send a POST request to the backend registration endpoint
+        // MODIFIED: Use the full URL for the API call
         const res = await axios.post('http://localhost:5001/api/auth/register', newUser);
         console.log(res.data);
-        alert('Signup successful!');
+        alert('Signup successful! Please log in.');
         onSwitchToLogin(); // Switch to login form on success
       } catch (err) {
-        console.error(err.response.data);
-        alert('Error during signup: ' + err.response.data.msg);
+        console.error(err.response ? err.response.data : err.message);
+        alert('Error during signup: ' + (err.response ? err.response.data.msg : 'Registration failed.'));
       }
-    } else {
-      console.log('Signup validation failed');
     }
-  };
-
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (

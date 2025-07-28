@@ -5,7 +5,7 @@
     flex-direction: column;
     height: 100vh;
     width: 100%;
-    background-color: #f4f7f6;
+    background-color: #4a5568;
     color: #333;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .user-table-container {
-    background-color: #fff;
+    background-color: #cbd5e0;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     padding: 1.5rem;
@@ -61,6 +61,7 @@
     font-weight: 600;
     color: #555;
 }
+
 
 .action-button {
     padding: 0.5rem 1rem;
@@ -197,4 +198,164 @@
 
 .modal-close-button:hover {
     background-color: #e1e1e1;
+}
+
+.action-buttons-container {
+    display: flex;
+    gap: 0.5rem; /* Adds space between buttons */
+}
+
+.delete-button {
+    background-color: #992013; /* A red color for delete */
+}
+
+.delete-button:hover {
+    background-color: #c0392b; /* A darker red on hover */
+}
+
+.user-table th, .user-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.action-buttons-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.delete-button {
+    background-color: #e74c3c;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}
+
+.analytics-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background-color: #8e44ad;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 1rem; /* Add some space */
+}
+
+.back-button-analytics {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background-color: #7f8c8d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.analytics-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.analytics-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.analytics-card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    text-align: center;
+}
+
+.analytics-card h2 {
+    margin-top: 0;
+    color: #555;
+}
+
+.analytics-card p {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.charts-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.chart-wrapper {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.chart-wrapper h3 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.analytics-nav-button {
+    background-color: #f39c12; /* Orange color for analytics */
+}
+.analytics-nav-button:hover {
+    background-color: #e67e22;
+}
+
+.task-list-analytics {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.task-list-analytics li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.task-list-analytics li.completed {
+    color: #95a5a6;
+    text-decoration: line-through;
+}
+
+.module-editor-item {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.module-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.module-content-preview {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #e9ecef;
+}
+
+.module-content-preview h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.module-content-preview ul {
+    margin-top: 0.5rem;
+    padding-left: 20px;
 }

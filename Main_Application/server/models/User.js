@@ -4,6 +4,15 @@ const mongoose = require('mongoose');
 
 const TaskSchema = new mongoose.Schema({
   title: String,
+  summary: { type: String, default: '' },
+    articles: [{
+        title: String,
+        url: String
+    }],
+    video: {
+        title: String,
+        youtube_id: String
+    },
   dueDate: Date,
   completed: { type: Boolean, default: false },
   testUrl: String,
@@ -20,6 +29,10 @@ const UserSchema = new mongoose.Schema({
   currentCourse: { type: String, default: 'None' },
   learningProgress: { type: Number, default: 0, min: 0, max: 100 },
   assignedTasks: [TaskSchema],
+  completedCourses: [{
+      courseName: String,
+      completedDate: { type: Date, default: Date.now }
+  }],
   date: { type: Date, default: Date.now },
 });
 

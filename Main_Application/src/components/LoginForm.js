@@ -1,12 +1,10 @@
 // src/LoginForm.js
 
-// Add this import at the top
-import axios from 'axios';
 import React, { useState } from 'react';
+import axios from 'axios';
 import { EyeIcon, EyeOffIcon } from './Icons';
 
 const LoginForm = ({ onSwitchToSignup }) => {
-  // MODIFIED: Changed 'email' to 'identifier'
   const [formData, setFormData] = useState({
     identifier: '',
     password: ''
@@ -16,7 +14,6 @@ const LoginForm = ({ onSwitchToSignup }) => {
 
   const validate = () => {
     const newErrors = {};
-    // MODIFIED: Check 'identifier' field
     if (!formData.identifier) newErrors.identifier = 'Username or Email is required';
     if (!formData.password) newErrors.password = 'Password is required';
     setErrors(newErrors);
@@ -32,30 +29,29 @@ const LoginForm = ({ onSwitchToSignup }) => {
     if (validate()) {
       const userCredentials = {
         identifier: formData.identifier,
-        password: formData.password,
+        password: formData.password
       };
 
       try {
+        // MODIFIED: Use the full URL for the API call
         const { data } = await axios.post('http://localhost:5001/api/auth/login', userCredentials);
         
-        // Save token and user info to localStorage
         localStorage.setItem('userInfo', JSON.stringify(data));
 
         alert('Login successful!');
-        // Redirect based on role
-        if (data.role === 'admin') {
-          window.location.href = '/admin'; // Redirect to admin dashboard
+        
+        if (data.user.role === 'admin') {
+          window.location.href = '/admin';
         } else {
-          window.location.href = '/dashboard'; // Redirect to learner dashboard
+          window.location.href = '/dashboard';
         }
 
       } catch (err) {
         console.error(err.response ? err.response.data : err.message);
-        alert('Login failed: ' + (err.response ? err.response.data.msg : err.message));
+        alert('Login failed: ' + (err.response ? err.response.data.msg : 'Invalid Credentials'));
       }
     }
   };
-
 
   return (
     <div className="form-container">
@@ -66,7 +62,6 @@ const LoginForm = ({ onSwitchToSignup }) => {
       <form onSubmit={handleSubmit} noValidate>
         <div className="inputs-wrapper">
           <div>
-            {/* MODIFIED: Changed name and value to 'identifier' */}
             <input
               type="text"
               name="identifier"
@@ -106,4 +101,3 @@ const LoginForm = ({ onSwitchToSignup }) => {
 };
 
 export default LoginForm;
-
