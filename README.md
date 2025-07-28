@@ -1,8 +1,9 @@
 **Lean Axis**
 
 To run the application:
-/n
+```
 cd Main_Application
+```
 
 In terminal 1
 ```Starting Backend server
