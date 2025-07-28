@@ -99,6 +99,10 @@ You need to install dependencies for both the Node.js server and the React front
 
 ### 4. Running the Application
 
+```bash
+cd Main_Application
+```
+
 To run the full application, you will need **three separate terminals**.
 
 #### **Terminal 1: Start the Node.js Backend**
