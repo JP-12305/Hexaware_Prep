@@ -1,8 +1,6 @@
-// src/CourseEditor.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ManageUserPage.css'; // Reuse styles
+import './ManageUserPage.css';
 
 const CourseEditor = () => {
     const [departments, setDepartments] = useState([]);

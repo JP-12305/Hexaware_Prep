@@ -1,9 +1,7 @@
-// src/AnalyticsDashboard.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import './AdminDashboard.css'; // We can reuse the main admin CSS
+import './AdminDashboard.css'; 
 
 const AnalyticsDashboard = () => {
     const [analyticsData, setAnalyticsData] = useState(null);

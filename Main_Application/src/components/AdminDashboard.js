@@ -39,7 +39,7 @@ const AdminDashboard = () => {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             await axios.delete(`http://localhost:5001/api/admin/users/${userId}`, config);
             alert('User deleted successfully.');
-            fetchUsers(); // Re-fetch users to update the list
+            fetchUsers();
         } catch (err) {
             alert('Failed to delete user.');
         }

@@ -86,7 +86,6 @@ router.post('/:courseId/modules/:moduleId/generate-content', protect, admin, asy
         
         const { summary, articles, video } = agentResponse.data;
 
-        // Update the module with the AI-generated content
         module.summary = summary;
         module.articles = articles;
         module.video = video;

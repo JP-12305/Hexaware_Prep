@@ -33,7 +33,6 @@ const LoginForm = ({ onSwitchToSignup }) => {
       };
 
       try {
-        // MODIFIED: Use the full URL for the API call
         const { data } = await axios.post('http://localhost:5001/api/auth/login', userCredentials);
         
         localStorage.setItem('userInfo', JSON.stringify(data));

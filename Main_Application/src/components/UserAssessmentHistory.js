@@ -12,9 +12,8 @@ const UserAssessmentHistory = () => {
     const [error, setError] = useState(null);
     const [expandedId, setExpandedId] = useState(null);
 
-    // CORRECTED: This logic now correctly extracts the user ID from the URL
     const pathParts = window.location.pathname.split('/');
-    const userId = pathParts[pathParts.length - 2]; // Gets the ID before '/assessments'
+    const userId = pathParts[pathParts.length - 2]; 
 
     useEffect(() => {
         const fetchData = async () => {

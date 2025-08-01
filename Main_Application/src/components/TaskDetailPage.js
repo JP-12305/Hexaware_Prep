@@ -1,8 +1,6 @@
-// src/TaskDetailPage.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './LearnerDashboard.css'; // We can reuse styles
+import './LearnerDashboard.css';
 
 const TaskDetailPage = () => {
     const [task, setTask] = useState(null);
@@ -16,7 +14,6 @@ const TaskDetailPage = () => {
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                // We need to fetch the full user dashboard data to find the task
                 const { data } = await axios.get('http://localhost:5001/api/dashboard', config);
                 const currentTask = data.assignedTasks.find(t => t._id === taskId);
                 if (currentTask) {
@@ -34,7 +31,6 @@ const TaskDetailPage = () => {
     }, [taskId]);
 
     const handleStartModuleAssessment = () => {
-    // Navigate to a new URL that includes the task ID
     window.location.href = `/assessment/module/${taskId}`;
 };
 

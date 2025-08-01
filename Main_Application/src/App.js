@@ -16,7 +16,7 @@ import AIGeneratorPage from './components/AIGeneratorPage';
 import CourseContentEditor from './components/CourseContentEditor';
 import AssessmentPage from './components/AssessmentPage';
 import UserAssessmentHistory from './components/UserAssessmentHistory';
-// import SkillProfilePage from './components/SkillProfilePage'; // <-- IMPORT NEW PAGE
+// import SkillProfilePage from './components/SkillProfilePage'; 
 
 
 const App = () => {

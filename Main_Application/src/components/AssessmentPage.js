@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'; // Import useRef
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './LearnerDashboard.css';
 
@@ -9,17 +9,13 @@ const AssessmentPage = () => {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
 
-    // State for the review screen
     const [isReviewMode, setIsReviewMode] = useState(false);
     const [finalScore, setFinalScore] = useState(0);
 
-    // --- THIS IS THE CORRECT FIX for React Strict Mode ---
-    // We use a ref to track if the effect has already run.
-    // Unlike state, a ref's value persists across re-renders without causing them.
+
     const effectRan = useRef(false);
 
     useEffect(() => {
-        // In Strict Mode, React runs this effect twice. This check ensures our code only runs once.
         if (effectRan.current === true) {
             return;
         }
@@ -50,13 +46,11 @@ const AssessmentPage = () => {
 
         startAssessment();
 
-        // The cleanup function of the effect is the perfect place to set our flag.
-        // It runs when the component unmounts.
         return () => {
             effectRan.current = true;
         };
-    }, []); // The empty dependency array is correct and necessary.
-    // --- END OF FIX ---
+    }, []);
+
 
     const handleAnswerChange = (questionId, answer) => {
         setAnswers({ ...answers, [questionId]: answer });

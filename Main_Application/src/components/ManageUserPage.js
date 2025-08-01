@@ -40,7 +40,6 @@ const ManageUserPage = () => {
             setDepartments(deptsData);
             setAllCourses(coursesRes.data);
             
-            // Set initial dropdown values based on user's current data
             setSelectedDept(userData.department);
             
             const currentDept = deptsData.find(d => d.name === userData.department);
@@ -63,13 +62,11 @@ const ManageUserPage = () => {
         fetchData();
     }, [userId]);
 
-    // CORRECTED LOGIC: These effects now correctly handle updates without resetting the initial state.
     useEffect(() => {
         const dept = departments.find(d => d.name === selectedDept);
         if (dept) {
             const newCategories = dept.roles.map(r => r.category);
             setAvailableCategories(newCategories);
-            // Only reset category if the current one is not in the new list
             if (!newCategories.includes(selectedCategory)) {
                 setSelectedCategory(newCategories[0] || '');
             }

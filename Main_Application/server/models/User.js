@@ -42,7 +42,6 @@ const UserSchema = new mongoose.Schema({
     currentCourse: { type: String, default: 'None' },
     learningProgress: { type: Number, default: 0, min: 0, max: 100 },
     assignedTasks: [TaskSchema],
-    // This is the critical field for the assessment flow
     proficiencyAssessmentStatus: {
         type: String,
         enum: ['pending', 'completed','pre-assessment-pending'],

@@ -1,9 +1,7 @@
-// src/SkillProfilePage.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminDashboard.css';
-import './SkillProfilePage.css'; // A new CSS file for this page
+import './SkillProfilePage.css'; 
 
 const SkillProfilePage = () => {
     const [user, setUser] = useState(null);

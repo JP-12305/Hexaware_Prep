@@ -65,7 +65,7 @@ router.post('/tasks/:taskId/start-assessment', protect, async (req, res) => {
         }
 
         const aiAgentUrl = 'http://localhost:5002/generate-proficiency-assessment';
-        const payload = { target_role: task.title }; // Use the module title for the quiz
+        const payload = { target_role: task.title }; 
         const agentResponse = await axios.post(aiAgentUrl, payload);
         const { questions } = agentResponse.data;
 
@@ -95,7 +95,6 @@ router.post('/submit-assessment/:assessmentId', protect, async (req, res) => {
 
         const user = await User.findById(req.user.id);
         
-        // --- Universal Logic: Update Skill Profile ---
         let score = 0;
         let skillProfile = user.skillProfile.find(p => p.skillName === user.role);
         if (!skillProfile) {
@@ -120,7 +119,6 @@ router.post('/submit-assessment/:assessmentId', protect, async (req, res) => {
         assessment.status = 'completed';
         await assessment.save();
 
-        // --- Conditional Logic based on Assessment Type ---
         if (assessment.assessmentType === 'proficiency') {
             user.proficiencyAssessmentStatus = 'completed';
             const aiAgentUrl = 'http://localhost:5002/generate-full-course-content';
@@ -144,7 +142,6 @@ router.post('/submit-assessment/:assessmentId', protect, async (req, res) => {
                 const completedTasks = user.assignedTasks.filter(t => t.completed).length;
                 user.learningProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-                // If all tasks are now complete, archive the course
                 if (user.learningProgress === 100 && user.currentCourse !== 'None') {
                     user.completedCourses.push({ courseName: user.currentCourse });
                     user.currentCourse = 'None';

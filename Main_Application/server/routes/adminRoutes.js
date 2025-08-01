@@ -90,14 +90,12 @@ router.post('/users/:id/assign-course', protect, admin, async (req, res) => {
         }
 
         user.currentCourse = course.name;
-        user.assignedTasks = []; // Clear tasks, they will be generated after the assessment
+        user.assignedTasks = []; 
         user.learningProgress = 0;
         
-        // --- NEW LOGIC ---
-        // Set the status and store the title of the first module for the pre-assessment
         user.proficiencyAssessmentStatus = 'pre-assessment-pending';
         user.preAssessmentModuleTitle = course.modules[0].title;
-        // --- END NEW LOGIC ---
+
 
         await user.save();
         res.json(user);
@@ -119,7 +117,7 @@ router.delete('/users/:id/assign-course', protect, admin, async (req, res) => {
         }
         user.currentCourse = 'None';
         user.learningProgress = 0;
-        user.assignedTasks = []; // Also clear the tasks
+        user.assignedTasks = []; 
         await user.save();
         res.json(user);
     } catch (err) {
@@ -241,7 +239,7 @@ router.get('/users/:userId/assessments', protect, admin, async (req, res) => {
         res.json(assessments);
     } catch (err) {
         console.error("--- UNEXPECTED ERROR in /assessments route ---");
-        console.error(err); // Log the full error object
+        console.error(err);
         res.status(500).send('Server Error');
     }
 });
@@ -256,10 +254,9 @@ router.put('/users/:id/reset-assessment', protect, admin, async (req, res) => {
             return res.status(404).json({ msg: 'User not found' });
         }
 
-        // Reset the user's status and clear their skill profile
         user.proficiencyAssessmentStatus = 'pending';
         user.skillProfile = [];
-        user.assignedTasks = []; // Also clear tasks to restart the learning path
+        user.assignedTasks = [];
         user.learningProgress = 0;
 
         await user.save();

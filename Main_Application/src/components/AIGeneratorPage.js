@@ -9,7 +9,6 @@ const AIGeneratorPage = () => {
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
 
-    // State for the new chained dropdowns
     const [selectedDept, setSelectedDept] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedSkill, setSelectedSkill] = useState('');
@@ -36,7 +35,6 @@ const AIGeneratorPage = () => {
         fetchDepts();
     }, []);
 
-    // CORRECTED LOGIC: These effects now correctly handle updates without resetting the initial state.
     useEffect(() => {
         const dept = departments.find(d => d.name === selectedDept);
         if (dept) {

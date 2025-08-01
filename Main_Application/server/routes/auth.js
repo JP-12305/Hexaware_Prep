@@ -51,11 +51,10 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { identifier, password } = req.body;
     
-    // --- START DEBUG LOGGING ---
     console.log('--- Login Attempt Received ---');
     console.log('Identifier:', identifier);
     console.log('Password received:', password ? 'Yes' : 'No');
-    // --- END DEBUG LOGGING ---
+  
 
     try {
         let user = await User.findOne({

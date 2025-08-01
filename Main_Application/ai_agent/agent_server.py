@@ -113,7 +113,6 @@ def generate_module_content():
         print(f"An error occurred in /generate-module-content: {e}")
         return jsonify({"error": "Failed to generate module content"}), 500
 
-# Optimized Agent: Generates a full, content-rich course in one flow
 @app.route('/generate-full-course-content', methods=['POST'])
 def generate_full_course_content():
     try:
