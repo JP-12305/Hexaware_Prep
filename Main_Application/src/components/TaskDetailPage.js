@@ -1,6 +1,8 @@
+// src/TaskDetailPage.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './LearnerDashboard.css'; 
+import './LearnerDashboard.css'; // We can reuse styles
 
 const TaskDetailPage = () => {
     const [task, setTask] = useState(null);
@@ -14,6 +16,7 @@ const TaskDetailPage = () => {
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+                // We need to fetch the full user dashboard data to find the task
                 const { data } = await axios.get('http://localhost:5001/api/dashboard', config);
                 const currentTask = data.assignedTasks.find(t => t._id === taskId);
                 if (currentTask) {
@@ -30,17 +33,10 @@ const TaskDetailPage = () => {
         fetchTask();
     }, [taskId]);
 
-    const handleMarkComplete = async () => {
-        try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-            const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            await axios.put(`http://localhost:5001/api/dashboard/tasks/${taskId}/complete`, {}, config);
-            alert('Module marked as complete! Your progress has been updated.');
-            window.location.href = '/dashboard';
-        } catch (err) {
-            alert('Failed to update task.');
-        }
-    };
+    const handleStartModuleAssessment = () => {
+    // Navigate to a new URL that includes the task ID
+    window.location.href = `/assessment/module/${taskId}`;
+};
 
     if (loading) return <div className="dashboard-loading"><h1>Loading Module...</h1></div>;
     if (error) return <div className="dashboard-loading"><h1 style={{color: 'red'}}>{error}</h1></div>;
@@ -88,8 +84,8 @@ const TaskDetailPage = () => {
                     </div>
 
                     {!task.completed && (
-                        <button className="complete-button" onClick={handleMarkComplete}>
-                            Mark as Complete
+                        <button className="complete-button" onClick={handleStartModuleAssessment}>
+                            Finish Module & Start Assessment
                         </button>
                     )}
                     {task.completed && (

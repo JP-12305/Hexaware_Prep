@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './LearnerDashboard.css';
+import './LearnerDashboard.css'; // A new CSS file for this page
 
 const LearnerDashboard = () => {
     const [user, setUser] = useState(null);
@@ -41,6 +41,10 @@ const LearnerDashboard = () => {
         window.location.href = '/';
     };
 
+    const handleStartAssessment = () => {
+        window.location.href = '/assessment';
+    };
+
     if (loading) return <div className="dashboard-loading"><h1>Loading Dashboard...</h1></div>;
     if (error) return <div className="dashboard-loading"><h1 style={{color: 'red'}}>{error}</h1></div>;
 
@@ -68,42 +72,51 @@ const LearnerDashboard = () => {
             </header>
             <main className="learner-main">
                 <h2>WELCOME {user?.username?.toUpperCase()},</h2>
-                
-                <div className="modules-container">
-                    {dashboardData?.assignedTasks && dashboardData.assignedTasks.length > 0 ? (
-                        dashboardData.assignedTasks.map((task, index) => (
-                            <div className="module-card" key={task._id}>
-                                <div className="module-header">
-                                    <h3>WEEK {index + 1}</h3>
-                                    <div className={`status-checkbox ${task.completed ? 'completed' : ''}`}>✓</div>
-                                </div>
-                                <div className="module-body">
-                                    <h4>{task.title}</h4>
-                                    <p>This module covers key concepts related to your role.</p>
-                                    <p><strong>Role:</strong> {user?.role}</p>
-                                </div>
-                                <button 
-                                    className="open-button"
-                                    onClick={() => window.location.href = `/dashboard/task/${task._id}`}>
-                                    OPEN →
-                                </button>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="no-modules-message">
-                            <p>No learning modules have been assigned to you yet.</p>
-                            <p>Please contact your administrator or manager.</p>
-                        </div>
-                    )}
-                </div>
 
-                <div className="progress-section">
-                    <h3>Overall Progress</h3>
-                    <div className="overall-progress-bar-container">
-                        <div className="overall-progress-bar" style={{ width: `${dashboardData?.learningProgress}%` }}></div>
+                {dashboardData?.proficiencyAssessmentStatus === 'pre-assessment-pending' ? (
+                    <div className="assessment-prompt-card">
+                        <h3>Pre-Assessment for "{dashboardData.currentCourse}"</h3>
+                        <p>To personalize your learning path, please complete a short assessment on the first topic: <strong>{dashboardData.preAssessmentModuleTitle}</strong>.</p>
+                        <button onClick={handleStartAssessment} className="start-assessment-button">Start Assessment</button>
                     </div>
-                    <span>{dashboardData?.learningProgress}%</span>
-                </div>
+                ) : (
+                    <>
+                        <div className="modules-container">
+                            {dashboardData?.assignedTasks && dashboardData.assignedTasks.length > 0 ? (
+                                dashboardData.assignedTasks.map((task, index) => (
+                                    <div className="module-card" key={task._id}>
+                                        <div className="module-header">
+                                            <h3>WEEK {index + 1}</h3>
+                                            <div className={`status-checkbox ${task.completed ? 'completed' : ''}`}>✓</div>
+                                        </div>
+                                        <div className="module-body">
+                                            <h4>{task.title}</h4>
+                                            <p>This module covers key concepts related to your role.</p>
+                                            <p><strong>Role:</strong> {user?.role}</p>
+                                        </div>
+                                        <button 
+                                            className="open-button"
+                                            onClick={() => window.location.href = `/dashboard/task/${task._id}`}>
+                                            OPEN →
+                                        </button>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="no-modules-message">
+                                    <p>No learning modules have been assigned to you yet.</p>
+                                    <p>Please contact your administrator or manager.</p>
+                                </div>
+                            )}
+                        </div>
+                        <div className="progress-section">
+                            <h3>Overall Progress</h3>
+                            <div className="overall-progress-bar-container">
+                                <div className="overall-progress-bar" style={{ width: `${dashboardData?.learningProgress}%` }}></div>
+                            </div>
+                            <span>{dashboardData?.learningProgress}%</span>
+                        </div>
+                    </>
+                )}
             </main>
         </div>
     );

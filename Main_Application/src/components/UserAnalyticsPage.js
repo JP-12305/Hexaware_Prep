@@ -1,14 +1,18 @@
+// src/UserAnalyticsPage.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './AdminDashboard.css';
+import './SkillProfilePage.css'; // We will merge this CSS later
 
 const UserAnalyticsPage = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const userId = window.location.pathname.split('/').pop();
+    const pathParts = window.location.pathname.split('/');
+    const userId = pathParts[3];
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -79,6 +83,30 @@ const UserAnalyticsPage = () => {
                             ))}
                         </ul>
                     </div>
+                </div>
+
+                {/* --- NEW: Skill Profile Section --- */}
+                <div className="user-table-container" style={{marginTop: '2rem'}}>
+                    {userData.skillProfile && userData.skillProfile.length > 0 ? (
+                        userData.skillProfile.map(profile => (
+                            <div key={profile._id} className="skill-profile-card">
+                                <h2>Skill Profile: {profile.skillName}</h2>
+                                <ul className="topic-list">
+                                    {profile.topics.map(topic => (
+                                        <li key={topic._id} className={`topic-item ${topic.proficiency.replace(' ', '-').toLowerCase()}`}>
+                                            <span className="topic-name">{topic.topicName}</span>
+                                            <span className="topic-proficiency">{topic.proficiency}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="skill-profile-card">
+                            <h2>Skill Profile</h2>
+                            <p>No skill profile data available. The user may need to complete a proficiency assessment.</p>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

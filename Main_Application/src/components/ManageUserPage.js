@@ -5,15 +5,19 @@ import './ManageUserPage.css';
 const ManageUserPage = () => {
     const [user, setUser] = useState(null);
     const [departments, setDepartments] = useState([]);
-    const [allCourses, setAllCourses] = useState([]); 
-    const [filteredCourses, setFilteredCourses] = useState([]); 
+    const [allCourses, setAllCourses] = useState([]);
+    const [filteredCourses, setFilteredCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // State for the new chained dropdowns
+    const [selectedDept, setSelectedDept] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedSkill, setSelectedSkill] = useState('');
     
-    const [role, setRole] = useState('');
-    const [department, setDepartment] = useState('');
-    const [availableRoles, setAvailableRoles] = useState([]);
+    const [availableCategories, setAvailableCategories] = useState([]);
+    const [availableSkills, setAvailableSkills] = useState([]);
+    
     const [courseName, setCourseName] = useState('');
 
     const userId = window.location.pathname.split('/')[3];
@@ -29,11 +33,25 @@ const ManageUserPage = () => {
                 axios.get('http://localhost:5001/api/courses', config)
             ]);
 
-            setUser(userRes.data);
-            setDepartments(deptsRes.data);
+            const userData = userRes.data;
+            const deptsData = deptsRes.data;
+
+            setUser(userData);
+            setDepartments(deptsData);
             setAllCourses(coursesRes.data);
-            setRole(userRes.data.role);
-            setDepartment(userRes.data.department);
+            
+            // Set initial dropdown values based on user's current data
+            setSelectedDept(userData.department);
+            
+            const currentDept = deptsData.find(d => d.name === userData.department);
+            if (currentDept) {
+                const currentCat = currentDept.roles.find(r => r.skills.includes(userData.role));
+                if (currentCat) {
+                    setSelectedCategory(currentCat.category);
+                }
+            }
+            setSelectedSkill(userData.role);
+
             setLoading(false);
         } catch (err) {
             setError('Failed to fetch data');
@@ -45,43 +63,58 @@ const ManageUserPage = () => {
         fetchData();
     }, [userId]);
 
+    // CORRECTED LOGIC: These effects now correctly handle updates without resetting the initial state.
     useEffect(() => {
-        const selectedDept = departments.find(d => d.name === department);
-        if (selectedDept) {
-            setAvailableRoles(selectedDept.roles);
-            if (!selectedDept.roles.includes(role)) {
-                setRole(selectedDept.roles[0] || '');
+        const dept = departments.find(d => d.name === selectedDept);
+        if (dept) {
+            const newCategories = dept.roles.map(r => r.category);
+            setAvailableCategories(newCategories);
+            // Only reset category if the current one is not in the new list
+            if (!newCategories.includes(selectedCategory)) {
+                setSelectedCategory(newCategories[0] || '');
             }
-        } else {
-            setAvailableRoles([]);
         }
-    }, [department, departments, role]);
+    }, [selectedDept, departments]);
 
     useEffect(() => {
-        if (department && role) {
+        const dept = departments.find(d => d.name === selectedDept);
+        if (dept) {
+            const roleCategory = dept.roles.find(r => r.category === selectedCategory);
+            if (roleCategory) {
+                const newSkills = roleCategory.skills;
+                setAvailableSkills(newSkills);
+                // Only reset skill if the current one is not in the new list
+                if (!newSkills.includes(selectedSkill)) {
+                    setSelectedSkill(newSkills[0] || '');
+                }
+            }
+        }
+    }, [selectedCategory, selectedDept, departments]);
+    
+    useEffect(() => {
+        if (selectedDept && selectedSkill) {
             const relevantCourses = allCourses.filter(course => 
-                course.targetDepartment === department && course.targetRole === role
+                course.targetDepartment === selectedDept && course.targetRole === selectedSkill
             );
             setFilteredCourses(relevantCourses);
             setCourseName(relevantCourses.length > 0 ? relevantCourses[0].name : '');
         }
-    }, [department, role, allCourses]);
-
+    }, [selectedDept, selectedSkill, allCourses]);
 
     const handleSaveChanges = async () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            await axios.put(`http://localhost:5001/api/admin/users/${userId}`, { role, department }, config);
+            await axios.put(`http://localhost:5001/api/admin/users/${userId}`, { department: selectedDept, role: selectedSkill }, config);
             alert('User details saved!');
             fetchData();
         } catch (err) {
             alert('Failed to save changes.');
         }
     };
-    
+
     const handleAssignCourse = async () => {
-        if (!courseName) return alert('No course is available or selected for this role.');
+        if (!courseName) return alert('No course is available or selected for this Skill.');
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
@@ -121,8 +154,22 @@ const ManageUserPage = () => {
         }
     };
 
+    const handleResetAssessment = async () => {
+        if (window.confirm('Are you sure you want to reset this user\'s proficiency assessment? Their current skill profile and learning path will be cleared, and they will be prompted to retake the assessment.')) {
+            try {
+                const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+                await axios.put(`http://localhost:5001/api/admin/users/${userId}/reset-assessment`, {}, config);
+                alert('Assessment has been reset. The user will be prompted to take it on their next login.');
+                fetchData();
+            } catch (err) {
+                alert('Failed to reset assessment.');
+            }
+        }
+    };
+
     const handleAiSuggest = () => {
-        alert(`AI Agent: Suggesting learning path for a ${role} in the ${department} department.`);
+        alert(`AI Agent: Suggesting learning path for a ${selectedSkill} in the ${selectedDept} department.`);
     };
 
     const handleGenerateReport = () => {
@@ -139,25 +186,29 @@ const ManageUserPage = () => {
                 <button onClick={() => window.location.href = '/admin'} className="back-button">Back to Dashboard</button>
             </header>
             <main className="manage-user-main">
-                
                 <div className="card">
                     <h3>User Details & Role</h3>
                     <div className="form-group">
                         <label>Department</label>
-                        <select value={department} onChange={e => setDepartment(e.target.value)}>
+                        <select value={selectedDept} onChange={e => setSelectedDept(e.target.value)}>
                             {departments.map(d => <option key={d._id} value={d.name}>{d.name}</option>)}
                         </select>
                     </div>
                     <div className="form-group">
-                        <label>Role</label>
-                        <select value={role} onChange={e => setRole(e.target.value)} disabled={!availableRoles.length}>
-                            {availableRoles.map(r => <option key={r} value={r}>{r}</option>)}
+                        <label>Role Category</label>
+                        <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} disabled={!availableCategories.length}>
+                            {availableCategories.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>Skill / Specialization</label>
+                        <select value={selectedSkill} onChange={e => setSelectedSkill(e.target.value)} disabled={!availableSkills.length}>
+                            {availableSkills.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                     </div>
                     <button onClick={handleSaveChanges} className="action-button">Save Changes</button>
                 </div>
 
-                
                 <div className="card">
                     <h3>Course Management</h3>
                     <div className="form-group">
@@ -168,7 +219,7 @@ const ManageUserPage = () => {
                                     <option key={course._id} value={course.name}>{course.name}</option>
                                 ))
                             ) : (
-                                <option>No courses available for this role</option>
+                                <option>No courses available for this Skill</option>
                             )}
                         </select>
                         <button onClick={handleAssignCourse} className="action-button-secondary" disabled={filteredCourses.length === 0}>
@@ -176,7 +227,6 @@ const ManageUserPage = () => {
                         </button>
                     </div>
                 </div>
-
                 
                 <div className="card">
                     <h3>Scheduled Tasks</h3>
@@ -196,7 +246,6 @@ const ManageUserPage = () => {
                     </ul>
                 </div>
                 
-                
                 <div className="card">
                     <h3>Progress & Reporting</h3>
                     <div className="course-info">
@@ -210,8 +259,13 @@ const ManageUserPage = () => {
                         <div className="progress-bar" style={{ width: `${user.learningProgress}%` }}></div>
                     </div>
                     <button onClick={handleGenerateReport} className="action-button">Generate Report</button>
+                    <button 
+                        onClick={handleResetAssessment} 
+                        className="action-button delete-button" 
+                        style={{marginTop: '1rem', backgroundColor: '#f39c12'}}>
+                        Reset Proficiency Assessment
+                    </button>
                 </div>
-                
                 
                 <div className="card">
                     <h3>Completed Course History</h3>
@@ -230,7 +284,6 @@ const ManageUserPage = () => {
                     </ul>
                 </div>
 
-                
                 <div className="card ai-card">
                    <h3>AI Learning Assistant (Gemini)</h3>
                     <p>Use AI to generate a personalized learning path based on the user's role and department.</p>

@@ -1,6 +1,8 @@
+// src/CourseEditor.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ManageUserPage.css';
+import './ManageUserPage.css'; // Reuse styles
 
 const CourseEditor = () => {
     const [departments, setDepartments] = useState([]);
@@ -59,6 +61,8 @@ const CourseEditor = () => {
             return alert('Please provide a Course Name and Target Role before generating content.');
         }
         alert(`AI Agent (Gemini) is now generating content for the course "${name}" for the role of a ${targetRole}. This will take a moment...`);
+        // In the future, the actual Gemini API call would be made here.
+        // It would generate modules and assessments based on the inputs.
     };
     
     if (loading) return <div className="dashboard-loading"><h1>Loading Editor...</h1></div>;

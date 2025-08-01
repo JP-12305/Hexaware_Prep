@@ -27,6 +27,11 @@ const AdminDashboard = () => {
     fetchUsers();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('userInfo');
+    window.location.href = '/';
+  };
+
   const handleDeleteUser = async (userId, username) => {
     if (window.confirm(`Are you sure you want to delete the user "${username}"? This action cannot be undone.`)) {
         try {
@@ -34,7 +39,7 @@ const AdminDashboard = () => {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             await axios.delete(`http://localhost:5001/api/admin/users/${userId}`, config);
             alert('User deleted successfully.');
-            fetchUsers(); 
+            fetchUsers(); // Re-fetch users to update the list
         } catch (err) {
             alert('Failed to delete user.');
         }
@@ -56,7 +61,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
         <header className="dashboard-header">
           <h1>Admin Console</h1>
-          <div> 
+          <div> {/* Wrapper for buttons */}
               <button 
                   onClick={() => window.location.href = '/admin/content'} 
                   className="analytics-button" style={{backgroundColor: '#16a085'}}>
@@ -72,7 +77,10 @@ const AdminDashboard = () => {
             type="text"
             placeholder="Search by name, email, or department..."
             className="search-bar"
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
+               
+          <button onClick={handleLogout} className="logout-button">Logout</button>
         </header>
         <main className="dashboard-main">
             <div className="user-table-container">
@@ -100,7 +108,7 @@ const AdminDashboard = () => {
                               onClick={() => window.location.href = `/admin/user/${user._id}`}>
                               Manage
                             </button>
-                            
+                            {/* ADD THIS NEW BUTTON */}
                             <button 
                               className="action-button analytics-nav-button"
                               onClick={() => window.location.href = `/admin/analytics/${user._id}`}>

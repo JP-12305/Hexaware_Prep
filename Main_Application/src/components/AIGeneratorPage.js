@@ -1,14 +1,21 @@
+// src/AIGeneratorPage.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ManageUserPage.css';
+import './ManageUserPage.css'; // Reuse styles
 
 const AIGeneratorPage = () => {
     const [departments, setDepartments] = useState([]);
-    const [targetDepartment, setTargetDepartment] = useState('');
-    const [targetRole, setTargetRole] = useState('');
-    const [availableRoles, setAvailableRoles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
+
+    // State for the new chained dropdowns
+    const [selectedDept, setSelectedDept] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedSkill, setSelectedSkill] = useState('');
+    
+    const [availableCategories, setAvailableCategories] = useState([]);
+    const [availableSkills, setAvailableSkills] = useState([]);
 
     useEffect(() => {
         const fetchDepts = async () => {
@@ -18,7 +25,7 @@ const AIGeneratorPage = () => {
                 const { data } = await axios.get('http://localhost:5001/api/departments', config);
                 setDepartments(data);
                 if (data.length > 0) {
-                    setTargetDepartment(data[0].name);
+                    setSelectedDept(data[0].name);
                 }
                 setLoading(false);
             } catch (err) {
@@ -29,23 +36,37 @@ const AIGeneratorPage = () => {
         fetchDepts();
     }, []);
 
+    // CORRECTED LOGIC: These effects now correctly handle updates without resetting the initial state.
     useEffect(() => {
-        const selectedDept = departments.find(d => d.name === targetDepartment);
-        if (selectedDept) {
-            setAvailableRoles(selectedDept.roles);
-            setTargetRole(selectedDept.roles[0] || '');
+        const dept = departments.find(d => d.name === selectedDept);
+        if (dept) {
+            const newCategories = dept.roles.map(r => r.category);
+            setAvailableCategories(newCategories);
+            setSelectedCategory(newCategories[0] || '');
         }
-    }, [targetDepartment, departments]);
+    }, [selectedDept, departments]);
+
+    useEffect(() => {
+        const dept = departments.find(d => d.name === selectedDept);
+        if (dept) {
+            const roleCategory = dept.roles.find(r => r.category === selectedCategory);
+            if (roleCategory) {
+                const newSkills = roleCategory.skills;
+                setAvailableSkills(newSkills);
+                setSelectedSkill(newSkills[0] || '');
+            }
+        }
+    }, [selectedCategory, selectedDept, departments]);
 
     const handleGenerateCourse = async () => {
-        if (!targetDepartment || !targetRole) {
-            return alert('Please select a Department and Role.');
+        if (!selectedDept || !selectedSkill) {
+            return alert('Please select a Department and Skill.');
         }
         setGenerating(true);
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            const payload = { targetDepartment, targetRole };
+            const payload = { targetDepartment: selectedDept, targetRole: selectedSkill };
             await axios.post('http://localhost:5001/api/courses/generate', payload, config);
             alert('AI has successfully generated and saved the new course!');
             window.location.href = '/admin/content';
@@ -67,17 +88,23 @@ const AIGeneratorPage = () => {
             <main className="manage-user-main" style={{gridTemplateColumns: '1fr'}}>
                 <div className="card">
                     <h3>Select Target Audience</h3>
-                    <p>Choose the department and role for which you want the AI to generate a complete learning course.</p>
+                    <p>Choose the department, category, and specific skill for which you want the AI to generate a complete learning course.</p>
                     <div className="form-group">
                         <label>Department</label>
-                        <select value={targetDepartment} onChange={e => setTargetDepartment(e.target.value)}>
+                        <select value={selectedDept} onChange={e => setSelectedDept(e.target.value)}>
                             {departments.map(d => <option key={d._id} value={d.name}>{d.name}</option>)}
                         </select>
                     </div>
                     <div className="form-group">
-                        <label>Role</label>
-                        <select value={targetRole} onChange={e => setTargetRole(e.target.value)} disabled={!availableRoles.length}>
-                            {availableRoles.map(r => <option key={r} value={r}>{r}</option>)}
+                        <label>Role Category</label>
+                        <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} disabled={!availableCategories.length}>
+                            {availableCategories.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>Skill / Specialization</label>
+                        <select value={selectedSkill} onChange={e => setSelectedSkill(e.target.value)} disabled={!availableSkills.length}>
+                            {availableSkills.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                     </div>
                 </div>

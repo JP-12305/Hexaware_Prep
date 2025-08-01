@@ -1,3 +1,5 @@
+// server/routes/courseRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const Course = require('../models/Course');
@@ -14,18 +16,7 @@ router.post('/generate', protect, admin, async (req, res) => {
         const payload = { target_role: targetRole };
         const agentResponse = await axios.post(aiAgentUrl, payload);
         
-        console.log("--- Response from Python AI Agent ---");
-        console.log("Status:", agentResponse.status);
-        console.log("Data:", JSON.stringify(agentResponse.data, null, 2));
-        
-
         const { name, description, modules } = agentResponse.data;
-
-        if (!modules || !Array.isArray(modules) || modules.length === 0) {
-            console.error("ERROR: AI agent did not return a valid 'modules' array.");
-            return res.status(500).send('AI agent failed to generate course modules.');
-        }
-        
 
         const newCourse = new Course({
             name,
@@ -45,22 +36,9 @@ router.post('/generate', protect, admin, async (req, res) => {
     }
 });
 
-// @route   GET /api/courses/:id
-// @desc    Get a single course by ID
+// @route   GET /api/courses
+// @desc    Get all courses
 // @access  Private/Admin
-router.get('/:id', protect, admin, async (req, res) => {
-    try {
-        const course = await Course.findById(req.params.id);
-        if (!course) {
-            return res.status(404).json({ msg: 'Course not found' });
-        }
-        res.json(course);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
-
 router.get('/', protect, admin, async (req, res) => {
     try {
         const courses = await Course.find().sort({ createdAt: -1 });
@@ -71,14 +49,16 @@ router.get('/', protect, admin, async (req, res) => {
     }
 });
 
-router.delete('/:id', protect, admin, async (req, res) => {
+// @route   GET /api/courses/:id
+// @desc    Get a single course by ID
+// @access  Private/Admin
+router.get('/:id', protect, admin, async (req, res) => {
     try {
         const course = await Course.findById(req.params.id);
         if (!course) {
             return res.status(404).json({ msg: 'Course not found' });
         }
-        await course.deleteOne();
-        res.json({ msg: 'Course removed' });
+        res.json(course);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -106,6 +86,7 @@ router.post('/:courseId/modules/:moduleId/generate-content', protect, admin, asy
         
         const { summary, articles, video } = agentResponse.data;
 
+        // Update the module with the AI-generated content
         module.summary = summary;
         module.articles = articles;
         module.video = video;
@@ -116,6 +97,23 @@ router.post('/:courseId/modules/:moduleId/generate-content', protect, admin, asy
     } catch (err) {
         console.error("Module Content Generation Error:", err.response ? err.response.data : err.message);
         res.status(500).send('Failed to generate module content');
+    }
+});
+
+// @route   DELETE /api/courses/:id
+// @desc    Delete a course
+// @access  Private/Admin
+router.delete('/:id', protect, admin, async (req, res) => {
+    try {
+        const course = await Course.findById(req.params.id);
+        if (!course) {
+            return res.status(404).json({ msg: 'Course not found' });
+        }
+        await course.deleteOne();
+        res.json({ msg: 'Course removed' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
 });
 

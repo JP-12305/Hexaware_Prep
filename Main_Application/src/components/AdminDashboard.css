@@ -1,3 +1,5 @@
+/* src/AdminDashboard.css */
+
 .admin-dashboard {
     display: flex;
     flex-direction: column;
@@ -15,6 +17,22 @@
     background-color: #ffffff;
     border-bottom: 1px solid #e0e0e0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logout-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background-color: #c0392b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .dashboard-header h1 {
@@ -102,6 +120,7 @@
     height: 100vh;
 }
 
+/* --- Modal Styles --- */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -122,6 +141,7 @@
     width: 90%;
     max-width: 500px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    /* MODIFIED: Fix for modal overflow */
     max-height: 90vh;
     overflow-y: auto;
 }
@@ -150,6 +170,7 @@
     box-sizing: border-box;
     margin-bottom: 1rem;
     font-size: 1rem;
+    /* MODIFIED: Custom dropdown styling */
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -160,6 +181,7 @@
     background-size: 16px 12px;
 }
 
+/* Ensure date input doesn't have custom arrow */
 .modal-section input[type="date"] {
     background-image: none;
 }
@@ -196,15 +218,15 @@
 
 .action-buttons-container {
     display: flex;
-    gap: 0.5rem; 
+    gap: 0.5rem; /* Adds space between buttons */
 }
 
 .delete-button {
-    background-color: #992013;
+    background-color: #992013; /* A red color for delete */
 }
 
 .delete-button:hover {
-    background-color: #c0392b;
+    background-color: #c0392b; /* A darker red on hover */
 }
 
 .user-table th, .user-table td {
@@ -234,7 +256,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-right: 1rem; 
+    margin-right: 1rem; /* Add some space */
 }
 
 .back-button-analytics {
@@ -298,7 +320,7 @@
 }
 
 .analytics-nav-button {
-    background-color: #f39c12; 
+    background-color: #f39c12; /* Orange color for analytics */
 }
 .analytics-nav-button:hover {
     background-color: #e67e22;
@@ -352,4 +374,107 @@
 .module-content-preview ul {
     margin-top: 0.5rem;
     padding-left: 20px;
+}
+.assessment-history-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.assessment-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.assessment-summary:hover {
+    background-color: #e9ecef;
+}
+
+.assessment-details {
+    padding: 1.5rem;
+}
+
+.question-review {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+.question-review:last-child {
+    border-bottom: none;
+}
+
+.question-review ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.question-review li {
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+}
+
+.question-review li.correct {
+    background-color: #d4edda;
+    border-left: 4px solid #28a745;
+}
+
+.question-review li.incorrect {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+}
+
+.skill-profile-card {
+    margin-bottom: 2rem;
+}
+
+.skill-profile-card h2 {
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.topic-list {
+    list-style: none;
+    padding: 0;
+}
+
+.topic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    border-left: 5px solid;
+}
+
+.topic-item.mastered {
+    background-color: #eafaf1;
+    border-color: #2ecc71;
+}
+
+.topic-item.needs-improvement {
+    background-color: #fbeee6;
+    border-color: #e74c3c;
+}
+
+.topic-item.untested {
+    background-color: #f4f6f7;
+    border-color: #95a5a6;
+}
+
+.topic-name {
+    font-weight: 500;
+}
+
+.topic-proficiency {
+    font-weight: bold;
+    font-size: 0.9rem;
 }

@@ -1,3 +1,4 @@
+// src/App.js
 
 import React from 'react';
 import './App.css';
@@ -13,11 +14,17 @@ import ContentManager from './components/ContentManager';
 import CourseEditor from './components/CourseEditor';
 import AIGeneratorPage from './components/AIGeneratorPage';
 import CourseContentEditor from './components/CourseContentEditor';
+import AssessmentPage from './components/AssessmentPage';
+import UserAssessmentHistory from './components/UserAssessmentHistory';
+// import SkillProfilePage from './components/SkillProfilePage'; // <-- IMPORT NEW PAGE
 
 
 const App = () => {
   const path = window.location.pathname;
 
+    if (path === '/assessment') {
+    return <AssessmentPage />;
+    }
     if (path.startsWith('/admin/analytics/')) {
       return <UserAnalyticsPage />;
     }
@@ -33,6 +40,10 @@ const App = () => {
 
     if (path === '/admin/analytics') {
         return <AnalyticsDashboard />;
+    }
+
+    if (path.startsWith('/admin/user/') && path.endsWith('/assessments')) {
+    return <UserAssessmentHistory />;
     }
 
     if (path.startsWith('/admin/user/')) {
@@ -53,6 +64,22 @@ const App = () => {
 
     if (path === '/dashboard') {
         return <LearnerDashboard />;
+    }
+
+    // if (path.startsWith('/admin/user/') && path.endsWith('/skill-profile')) {
+    //   return <SkillProfilePage />;
+    // }
+
+    if (path.startsWith('/admin/analytics/')) {
+    return <UserAnalyticsPage />;
+    }
+
+    if (path.startsWith('/assessment/module/')) {
+      return <AssessmentPage />;
+    }
+
+    if (path === '/assessment') {
+        return <AssessmentPage />;
     }
 
   const isLoginView = !new URLSearchParams(window.location.search).has('signup');

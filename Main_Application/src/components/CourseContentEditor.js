@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminDashboard.css';
-import './ManageUserPage.css';
+import './ManageUserPage.css'; // For some shared styles
 
 const CourseContentEditor = () => {
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [generating, setGenerating] = useState(null);
+    const [generating, setGenerating] = useState(null); // Track which module is generating
 
     const courseId = window.location.pathname.split('/').pop();
 
@@ -18,6 +18,7 @@ const CourseContentEditor = () => {
             setCourse(data);
             setLoading(false);
         } catch (err) {
+            console.error("Failed to fetch course details", err);
             setLoading(false);
         }
     };
@@ -33,7 +34,7 @@ const CourseContentEditor = () => {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             await axios.post(`http://localhost:5001/api/courses/${courseId}/modules/${moduleId}/generate-content`, {}, config);
             alert('Content generated successfully!');
-            fetchCourse();
+            fetchCourse(); // Refresh course data to show new content
         } catch (err) {
             alert('Failed to generate content.');
         } finally {
@@ -53,7 +54,7 @@ const CourseContentEditor = () => {
             <main className="dashboard-main">
                 <div className="user-table-container">
                     <h2>Course Modules</h2>
-                    <p>Generate learning materials for each module using the AI agent.</p>
+                    <p>Generate learning materials for each module using the AI agent. The generated content will then be visible to learners.</p>
                     <ul className="task-list-analytics">
                         {course.modules.map(module => (
                             <li key={module._id} className="module-editor-item">

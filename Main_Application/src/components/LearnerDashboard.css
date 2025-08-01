@@ -1,3 +1,4 @@
+/* src/LearnerDashboard.css */
 .learner-dashboard {
     background-color: #4a5568;
     min-height: 100vh;
@@ -247,7 +248,7 @@
 }
 
 .no-modules-message {
-    grid-column: 1 / -1; 
+    grid-column: 1 / -1; /* Make message span all columns */
     text-align: center;
     padding: 3rem;
     background-color: #f8f9fa;
@@ -258,4 +259,207 @@
 .no-modules-message p {
     margin: 0;
     font-size: 1.2rem;
+}
+
+.assessment-prompt-card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.start-assessment-button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.assessment-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+}
+
+.question-card {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.option-label {
+    display: block;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.option-label:has(input:checked) {
+    background-color: #e7f1ff;
+    border-color: #007bff;
+}
+.assessment-prompt-card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.start-assessment-button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.start-assessment-button:hover {
+    background-color: #0056b3;
+}
+
+/* --- NEW & IMPROVED ASSESSMENT PAGE STYLES --- */
+.assessment-container {
+    background-color: #ffffff;
+    padding: 2rem 3rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.question-card {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e9ecef;
+}
+.question-card:last-of-type {
+    border-bottom: none;
+    margin-bottom: 1.5rem;
+}
+
+.question-card h4 {
+    font-size: 1.1rem;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.question-card p {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #212529;
+    margin-top: 0;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 1rem;
+}
+
+.option-label:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.option-label input[type="radio"] {
+    /* Modern custom radio button */
+    appearance: none;
+    background-color: #fff;
+    margin: 0;
+    font: inherit;
+    color: currentColor;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid currentColor;
+    border-radius: 50%;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+}
+
+.option-label input[type="radio"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em #007bff;
+}
+
+.option-label input[type="radio"]:checked::before {
+    transform: scale(1);
+}
+
+.option-label:has(input:checked) {
+    background-color: #e7f1ff;
+    border-color: #007bff;
+    font-weight: 500;
+}
+.results-summary {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.results-summary h2 {
+    margin-top: 0;
+}
+
+.option-review {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border: 1px solid #dee2e6;
+    font-weight: 500;
+}
+
+.option-review.correct {
+    border-color: #28a745;
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.option-review.incorrect {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.option-review span {
+    font-weight: bold;
+    margin-left: 0.5rem;
 }
