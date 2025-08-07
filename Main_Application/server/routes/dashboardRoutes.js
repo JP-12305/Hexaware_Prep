@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require('../models/User');
 const Course = require('../models/Course');
 const Assessment = require('../models/Assessment');
+const Suggestion = require('../models/Suggestion');
+const Notification = require('../models/Notification');
 const { protect } = require('../middleware/authMiddleware');
 const axios = require('axios');
 
@@ -65,7 +67,7 @@ router.post('/tasks/:taskId/start-assessment', protect, async (req, res) => {
         }
 
         const aiAgentUrl = 'http://localhost:5002/generate-proficiency-assessment';
-        const payload = { target_role: task.title }; 
+        const payload = { target_role: task.title };
         const agentResponse = await axios.post(aiAgentUrl, payload);
         const { questions } = agentResponse.data;
 
@@ -94,7 +96,6 @@ router.post('/submit-assessment/:assessmentId', protect, async (req, res) => {
         if (!assessment) return res.status(404).json({ msg: 'Assessment not found' });
 
         const user = await User.findById(req.user.id);
-        
         let score = 0;
         let skillProfile = user.skillProfile.find(p => p.skillName === user.role);
         if (!skillProfile) {
@@ -133,30 +134,85 @@ router.post('/submit-assessment/:assessmentId', protect, async (req, res) => {
                 video: module.video,
                 dueDate: new Date(new Date().setDate(new Date().getDate() + 7 * (index + 1)))
             }));
-
         } else if (assessment.assessmentType === 'module') {
             const task = user.assignedTasks.id(assessment.relatedTaskId);
-            if (task) {
-                task.completed = true;
-                const totalTasks = user.assignedTasks.length;
-                const completedTasks = user.assignedTasks.filter(t => t.completed).length;
-                user.learningProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            
+            console.log(`--- Module Assessment Submitted for task: ${task.title} ---`);
+            console.log(`Score: ${finalScore}%`);
 
-                if (user.learningProgress === 100 && user.currentCourse !== 'None') {
-                    user.completedCourses.push({ courseName: user.currentCourse });
-                    user.currentCourse = 'None';
-                    user.learningProgress = 0;
-                    user.assignedTasks = [];
-                }
+            if (finalScore < 50) { // Passing threshold
+                console.log('DEBUG: Score is below threshold. Generating remedial suggestion.');
+                const remedialAgentUrl = 'http://localhost:5002/generate-remedial-suggestion';
+                const remedialResponse = await axios.post(remedialAgentUrl, { failed_topic: task.title });
+                const { suggestedModuleTitle, justification } = remedialResponse.data;
+
+                const newSuggestion = new Suggestion({
+                    user: user._id,
+                    failedTopic: task.title,
+                    suggestedModuleTitle,
+                    justification
+                });
+                await newSuggestion.save();
+                console.log('DEBUG: Remedial suggestion saved for admin review.');
+
+            } else {
+                console.log('DEBUG: Score is above threshold. Marking task as complete.');
+                task.completed = true;
+            }
+
+            const totalTasks = user.assignedTasks.length;
+            const completedTasks = user.assignedTasks.filter(t => t.completed).length;
+            user.learningProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            console.log(`DEBUG: New progress calculated: ${user.learningProgress}%`);
+            
+            if (user.learningProgress === 100 && user.currentCourse !== 'None') {
+                console.log('DEBUG: Course complete! Archiving course and resetting progress.');
+                user.completedCourses.push({ 
+                    courseName: user.currentCourse,
+                    tasks: user.assignedTasks
+                });
+                user.currentCourse = 'None';
+                user.learningProgress = 0;
+                user.assignedTasks = [];
             }
         }
         
         user.markModified('skillProfile');
+        user.markModified('assignedTasks');
+        console.log('DEBUG: Saving user document...');
         await user.save();
+        console.log('DEBUG: User document saved successfully.');
         res.json({ score: finalScore });
 
     } catch (err) {
-        console.error("Error submitting assessment:", err.message);
+        console.error("--- UNEXPECTED ERROR in /submit-assessment route ---");
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /api/dashboard/notifications
+// @desc    Get all notifications for the logged-in user
+// @access  Private
+router.get('/notifications', protect, async (req, res) => {
+    try {
+        const notifications = await Notification.find({ user: req.user.id }).sort({ createdAt: -1 });
+        res.json(notifications);
+    } catch (err) {
+        console.error("Error fetching notifications:", err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   PUT /api/dashboard/notifications/mark-read
+// @desc    Mark all notifications as read for the logged-in user
+// @access  Private
+router.put('/notifications/mark-read', protect, async (req, res) => {
+    try {
+        await Notification.updateMany({ user: req.user.id, isRead: false }, { $set: { isRead: true } });
+        res.json({ msg: 'Notifications marked as read.' });
+    } catch (err) {
+        console.error("Error marking notifications as read:", err.message);
         res.status(500).send('Server Error');
     }
 });

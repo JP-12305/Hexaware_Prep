@@ -83,7 +83,6 @@ const UserAnalyticsPage = () => {
                     </div>
                 </div>
 
-                {/* --- NEW: Skill Profile Section --- */}
                 <div className="user-table-container" style={{marginTop: '2rem'}}>
                     {userData.skillProfile && userData.skillProfile.length > 0 ? (
                         userData.skillProfile.map(profile => (

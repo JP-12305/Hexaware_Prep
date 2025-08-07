@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './LearnerDashboard.css';
+import './LearnerDashboard.css'; 
 
 const TaskDetailPage = () => {
     const [task, setTask] = useState(null);

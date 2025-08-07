@@ -8,19 +8,22 @@ const AssessmentPage = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
-
     const [isReviewMode, setIsReviewMode] = useState(false);
     const [finalScore, setFinalScore] = useState(0);
-
-
     const effectRan = useRef(false);
 
     useEffect(() => {
+        console.log("AssessmentPage useEffect triggered.");
+        console.log("Current value of effectRan.current:", effectRan.current);
+        
+
         if (effectRan.current === true) {
+            console.log("Skipping API call because effect has already run.");
             return;
         }
 
         const startAssessment = async () => {
+            console.log("Making API call to start assessment...");
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
@@ -47,10 +50,10 @@ const AssessmentPage = () => {
         startAssessment();
 
         return () => {
+            console.log("Cleanup function ran. Setting effectRan.current to true.");
             effectRan.current = true;
         };
     }, []);
-
 
     const handleAnswerChange = (questionId, answer) => {
         setAnswers({ ...answers, [questionId]: answer });
@@ -88,7 +91,17 @@ const AssessmentPage = () => {
                             <div className="results-summary">
                                 <h2>Assessment Complete!</h2>
                                 <p>Your Score: <strong>{finalScore}%</strong></p>
-                            </div>
+                            
+                            {assessment.assessmentType === 'module' && (
+                                    <div className={`result-notification ${finalScore >= 50 ? 'pass' : 'fail'}`}>
+                                        {finalScore >= 50 ? (
+                                            "Congratulations! You've passed this module and your progress has been updated."
+                                        ) : (
+                                            "You did not meet the passing score (50%). An AI-generated suggestion for a remedial module has been sent to your administrator for review. Relearn the module again and try score higher marks to mark this module as completed"
+                                        )}
+                                    </div>
+                                )}
+                                </div>
                             {assessment.questions.map((q, index) => (
                                 <div key={q._id} className="question-card">
                                     <h4>Question {index + 1}</h4>

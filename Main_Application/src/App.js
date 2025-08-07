@@ -1,7 +1,7 @@
-// src/App.js
-
 import React from 'react';
 import './App.css';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
 import AdminDashboard from './components/AdminDashboard';
@@ -16,87 +16,76 @@ import AIGeneratorPage from './components/AIGeneratorPage';
 import CourseContentEditor from './components/CourseContentEditor';
 import AssessmentPage from './components/AssessmentPage';
 import UserAssessmentHistory from './components/UserAssessmentHistory';
-// import SkillProfilePage from './components/SkillProfilePage'; 
-
 
 const App = () => {
-  const path = window.location.pathname;
-
-    if (path === '/assessment') {
-    return <AssessmentPage />;
-    }
-    if (path.startsWith('/admin/analytics/')) {
-      return <UserAnalyticsPage />;
-    }
-    if (path === '/admin/content') {
-        return <ContentManager />;
-    }
-    if (path === '/admin/content/ai-generator') {
-      return <AIGeneratorPage />;
-    }
-    if (path === '/admin/content/new') {
-        return <CourseEditor />;
-    }
-
-    if (path === '/admin/analytics') {
-        return <AnalyticsDashboard />;
-    }
-
-    if (path.startsWith('/admin/user/') && path.endsWith('/assessments')) {
-    return <UserAssessmentHistory />;
-    }
-
-    if (path.startsWith('/admin/user/')) {
-      return <ManageUserPage />;
-    }
-
-    if (path.startsWith('/admin/content/editor/')) {
-    return <CourseContentEditor />;
-    }
-
-    if (path === '/admin') {
-      return <AdminDashboard />;
-    }
-    
-    if (path.startsWith('/dashboard/task/')) {
-        return <TaskDetailPage />;
-    }
-
-    if (path === '/dashboard') {
-        return <LearnerDashboard />;
-    }
-
-    // if (path.startsWith('/admin/user/') && path.endsWith('/skill-profile')) {
-    //   return <SkillProfilePage />;
-    // }
-
-    if (path.startsWith('/admin/analytics/')) {
-    return <UserAnalyticsPage />;
-    }
-
-    if (path.startsWith('/assessment/module/')) {
-      return <AssessmentPage />;
-    }
-
-    if (path === '/assessment') {
-        return <AssessmentPage />;
-    }
-
-  const isLoginView = !new URLSearchParams(window.location.search).has('signup');
-  const switchToSignup = () => window.location.href = '/?signup=true';
-  const switchToLogin = () => window.location.href = '/';
-
   return (
-    <div className="app-background">
-      <div className="card">
-        {isLoginView ? (
-          <LoginForm onSwitchToSignup={switchToSignup} />
-        ) : (
-          <SignupForm onSwitchToLogin={switchToLogin} />
-        )}
-      </div>
-    </div>
+    <Router>
+      <Routes>
+
+        {/*Authentication Routes */}
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+
+        {/*Learner */}
+        <Route path="/dashboard" element={<LearnerDashboard />} />
+        <Route path="/dashboard/task/:taskId" element={<TaskDetailPage />} />
+
+        {/*Assessment */}
+        <Route path="/assessment" element={<AssessmentPage />} />
+        <Route path="/assessment/module/:moduleId" element={<AssessmentPage />} />
+
+        {/*Admin */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/user/:userId" element={<ManageUserPage />} />
+        <Route path="/admin/user/:userId/assessments" element={<UserAssessmentHistory />} />
+
+        {/* 📚 Content */}
+        <Route path="/admin/content" element={<ContentManager />} />
+        <Route path="/admin/content/new" element={<CourseEditor />} />
+        <Route path="/admin/content/ai-generator" element={<AIGeneratorPage />} />
+        <Route path="/admin/content/editor/:courseId" element={<CourseContentEditor />} />
+
+        {/* 📊 Analytics */}
+        <Route path="/admin/analytics" element={<AnalyticsDashboard />} />
+        <Route path="/admin/analytics/:userId" element={<UserAnalyticsPage />} />
+
+      </Routes>
+    </Router>
   );
 };
+
+const LoginPage = () => {
+  const navigate = useNavigate();
+  const handleSwitchToSignup = () => {
+    navigate('/signup');
+  };
+
+  return (
+    <AuthLayout>
+      <LoginForm onSwitchToSignup={handleSwitchToSignup} />
+    </AuthLayout>
+  );
+};
+
+const SignupPage = () => {
+  const navigate = useNavigate();
+  const handleSwitchToLogin = () => {
+    navigate('/');
+  };
+
+  return (
+    <AuthLayout>
+      <SignupForm onSwitchToLogin={handleSwitchToLogin} />
+    </AuthLayout>
+  );
+};
+
+const AuthLayout = ({ children }) => (
+  <div className="app-background">
+    <div className="card">
+      {children}
+    </div>
+  </div>
+);
 
 export default App;

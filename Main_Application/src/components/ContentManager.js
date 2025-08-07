@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './AdminDashboard.css';
+import './AdminDashboard.css'; 
 
 const ContentManager = () => {
     const [courses, setCourses] = useState([]);
@@ -30,7 +30,6 @@ const ContentManager = () => {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
                 await axios.delete(`http://localhost:5001/api/courses/${courseId}`, config);
-                alert('Course deleted successfully.');
                 fetchCourses();
             } catch (err) {
                 alert('Failed to delete course.');
@@ -73,7 +72,6 @@ const ContentManager = () => {
                                     <td>{course.targetRole}</td>
                                     <td>
                                         <div className="action-buttons-container">
-                                            {/* MODIFIED: This button now navigates to the content editor */}
                                             <button 
                                                 className="action-button"
                                                 onClick={() => window.location.href = `/admin/content/editor/${course._id}`}

@@ -1,5 +1,3 @@
-// server/models/Course.js
-
 const mongoose = require('mongoose');
 
 const ModuleSchema = new mongoose.Schema({
@@ -13,10 +11,10 @@ const ModuleSchema = new mongoose.Schema({
         title: String,
         youtube_id: String
     },
-    content: String, // AI-generated content will go here
+    content: String, 
     assessment: {
         type: String,
-        ref: 'Assessment' // We can create this model later
+        ref: 'Assessment'
     }
 });
 

@@ -92,10 +92,10 @@ You need to install dependencies for both the Node.js server and the React front
     venv\Scripts\activate
     # On macOS/Linux:
     source venv/bin/activate
-    pip install -r requirements.txt  # Assuming you create a requirements.txt file
+    pip install Flask Flask-Cors google-generativeai python-dotenv 
     cd ..
     ```
-    *(Note: If you don't have a `requirements.txt` file, you can install the packages manually: `pip install Flask Flask-Cors google-generativeai python-dotenv`)*
+
 
 ### 4. Running the Application
 
@@ -109,7 +109,7 @@ To run the full application, you will need **three separate terminals**.
 
 ```bash
 cd server
-node server.js
+npm run dev
 ```
 *You should see "MongoDB connected successfully" and "Server is running on port 5001".*
 

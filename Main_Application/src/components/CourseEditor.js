@@ -47,21 +47,12 @@ const CourseEditor = () => {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             const courseData = { name, description, targetDepartment, targetRole };
             await axios.post('http://localhost:5001/api/courses', courseData, config);
-            alert('Course structure saved successfully!');
             window.location.href = '/admin/content';
         } catch (err) {
             alert('Failed to save course.');
         }
     };
 
-    const handleAIGenerate = () => {
-        if (!name || !targetRole) {
-            return alert('Please provide a Course Name and Target Role before generating content.');
-        }
-        alert(`AI Agent (Gemini) is now generating content for the course "${name}" for the role of a ${targetRole}. This will take a moment...`);
-        // In the future, the actual Gemini API call would be made here.
-        // It would generate modules and assessments based on the inputs.
-    };
     
     if (loading) return <div className="dashboard-loading"><h1>Loading Editor...</h1></div>;
 
@@ -98,12 +89,6 @@ const CourseEditor = () => {
                             {availableRoles.map(r => <option key={r} value={r}>{r}</option>)}
                         </select>
                     </div>
-                </div>
-
-                <div className="card ai-card">
-                    <h3>AI Content Generation (Gemini)</h3>
-                    <p>Click the button below to use AI to automatically generate learning modules, materials, and assessments for this course based on the target role.</p>
-                    <button onClick={handleAIGenerate} className="action-button-ai">Generate Course Content</button>
                 </div>
 
                 <div className="card">

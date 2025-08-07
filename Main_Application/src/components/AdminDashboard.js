@@ -1,130 +1,153 @@
-// src/AdminDashboard.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const fetchUsers = async () => {
-      try {
+  const fetchData = async () => {
+    try {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-        const { data } = await axios.get('http://localhost:5001/api/admin/users', config);
-        setUsers(data);
+        
+        const [usersRes, suggestionsRes] = await Promise.all([
+            axios.get('http://localhost:5001/api/admin/users', config),
+            axios.get('http://localhost:5001/api/admin/suggestions', config)
+        ]);
+
+        setUsers(usersRes.data);
+        setSuggestions(suggestionsRes.data);
         setLoading(false);
-      } catch (err) {
-        setError(err.response ? err.response.data.msg : 'Error fetching users');
+    } catch (err) {
+        console.error("Failed to fetch admin data", err);
         setLoading(false);
-      }
+    }
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchData();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('userInfo');
-    window.location.href = '/';
+  const handleApproveSuggestion = async (suggestionId) => {
+    try {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+        await axios.put(`http://localhost:5001/api/admin/suggestions/${suggestionId}/approve`, {}, config);
+        alert('Suggestion approved and remedial module assigned.');
+        fetchData();
+    } catch (err) {
+        alert('Failed to approve suggestion.');
+    }
+  };
+
+  const handleDismissSuggestion = async (suggestionId) => {
+    try {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+        await axios.put(`http://localhost:5001/api/admin/suggestions/${suggestionId}/dismiss`, {}, config);
+        alert('Suggestion has been dismissed.');
+        fetchData();
+    } catch (err) {
+        alert('Failed to dismiss suggestion.');
+    }
   };
 
   const handleDeleteUser = async (userId, username) => {
-    if (window.confirm(`Are you sure you want to delete the user "${username}"? This action cannot be undone.`)) {
+    if (window.confirm(`Are you sure you want to delete the user "${username}"?`)) {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             await axios.delete(`http://localhost:5001/api/admin/users/${userId}`, config);
-            alert('User deleted successfully.');
-            fetchUsers();
+            fetchData();
         } catch (err) {
             alert('Failed to delete user.');
         }
     }
   };
 
-  const filteredUsers = users.filter(user => {
-    const term = searchTerm.toLowerCase();
-    const usernameMatch = user.username && user.username.toLowerCase().includes(term);
-    const emailMatch = user.email && user.email.toLowerCase().includes(term);
-    const departmentMatch = user.department && user.department.toLowerCase().includes(term);
-    return usernameMatch || emailMatch || departmentMatch;
-  });
+  const handleLogout = () => {
+    localStorage.removeItem('userInfo');
+    window.location.href = '/';
+  };
+
+  const filteredUsers = users.filter(user =>
+    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) return <div className="dashboard-loading"><h1>Loading Admin Console...</h1></div>;
-  if (error) return <div className="dashboard-loading"><h1 style={{color: 'red'}}>{error}</h1></div>;
 
   return (
     <div className="admin-dashboard">
         <header className="dashboard-header">
-          <h1>Admin Console</h1>
-          <div> {/* Wrapper for buttons */}
-              <button 
-                  onClick={() => window.location.href = '/admin/content'} 
-                  className="analytics-button" style={{backgroundColor: '#16a085'}}>
-                  Content Manager
-              </button>
-              <button 
-                  onClick={() => window.location.href = '/admin/analytics'} 
-                  className="analytics-button">
-                  View Analytics
-              </button>
-          </div>
-          <input
-            type="text"
-            placeholder="Search by name, email, or department..."
-            className="search-bar"
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-               
-          <button onClick={handleLogout} className="logout-button">Logout</button>
+            <h1>Admin Console</h1>
+            <div className="header-controls">
+                 <button onClick={() => window.location.href = '/admin/content'} className="analytics-button" style={{backgroundColor: '#16a085'}}>Content Manager</button>
+                 <button onClick={() => window.location.href = '/admin/analytics'} className="analytics-button">View Analytics</button>
+                 <input
+                   type="text"
+                   placeholder="Search by name or email..."
+                   className="search-bar"
+                   onChange={(e) => setSearchTerm(e.target.value)}
+                 />
+                 <button onClick={handleLogout} className="logout-button">Logout</button>
+            </div>
         </header>
         <main className="dashboard-main">
-            <div className="user-table-container">
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Department</th>
-                    <th>Role</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map(user => (
-                    <tr key={user._id}>
-                      <td>{user.username}</td>
-                      <td>{user.email}</td>
-                      <td>{user.department}</td>
-                      <td>{user.role}</td>
-                      <td>
-                        <div className="action-buttons-container">
-                            <button 
-                              className="action-button" 
-                              onClick={() => window.location.href = `/admin/user/${user._id}`}>
-                              Manage
-                            </button>
-                            {/* ADD THIS NEW BUTTON */}
-                            <button 
-                              className="action-button analytics-nav-button"
-                              onClick={() => window.location.href = `/admin/analytics/${user._id}`}>
-                              Analytics
-                            </button>
-                            <button 
-                              className="action-button delete-button"
-                              onClick={() => handleDeleteUser(user._id, user.username)}>
-                              Delete
-                            </button>
+            {suggestions.length > 0 && (
+                <div className="action-items-container">
+                    <h2>Action Items: AI Suggestions</h2>
+                    {suggestions.map(sugg => (
+                        <div key={sugg._id} className="suggestion-card">
+                            <div className="suggestion-text">
+                                <p>
+                                    <strong>{sugg.user.username}</strong> needs help with <strong>{sugg.failedTopic}</strong>.
+                                </p>
+                                <p><em><strong>AI Suggests:</strong> "{sugg.suggestedModuleTitle}"</em></p>
+                                <p className="justification"><strong>Justification:</strong> {sugg.justification}</p>
+                            </div>
+                            <div className="action-buttons-container">
+                                <button onClick={() => handleApproveSuggestion(sugg._id)} className="action-button">Approve</button>
+                                <button onClick={() => handleDismissSuggestion(sugg._id)} className="action-button dismiss-button">Disapprove</button>
+                            </div>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    ))}
+                </div>
+            )}
+
+            <div className="user-table-container">
+                <h2>All Users</h2>
+                <table className="user-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredUsers.map(user => (
+                            <tr key={user._id}>
+                                <td>{user.username}</td>
+                                <td>{user.email}</td>
+                                <td>{user.department}</td>
+                                <td>{user.role}</td>
+                                <td>
+                                    <div className="action-buttons-container">
+                                        <button onClick={() => window.location.href = `/admin/user/${user._id}`} className="action-button">Manage</button>
+                                        <button onClick={() => window.location.href = `/admin/analytics/${user._id}`} className="action-button analytics-nav-button">Analytics</button>
+                                        <button onClick={() => handleDeleteUser(user._id, user.username)} className="action-button delete-button">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>

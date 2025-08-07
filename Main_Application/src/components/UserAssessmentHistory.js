@@ -1,5 +1,3 @@
-// src/UserAssessmentHistory.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminDashboard.css';
@@ -13,7 +11,7 @@ const UserAssessmentHistory = () => {
     const [expandedId, setExpandedId] = useState(null);
 
     const pathParts = window.location.pathname.split('/');
-    const userId = pathParts[pathParts.length - 2]; 
+    const userId = pathParts[pathParts.length - 2];
 
     useEffect(() => {
         const fetchData = async () => {

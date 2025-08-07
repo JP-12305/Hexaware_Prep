@@ -1,5 +1,3 @@
-// server/routes/courseRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const Course = require('../models/Course');
@@ -85,7 +83,6 @@ router.post('/:courseId/modules/:moduleId/generate-content', protect, admin, asy
         const agentResponse = await axios.post(aiAgentUrl, payload);
         
         const { summary, articles, video } = agentResponse.data;
-
         module.summary = summary;
         module.articles = articles;
         module.video = video;

@@ -1,5 +1,3 @@
-// server/models/User.js
-
 const mongoose = require('mongoose');
 
 const TopicSchema = new mongoose.Schema({
@@ -12,7 +10,7 @@ const TopicSchema = new mongoose.Schema({
 });
 
 const SkillProfileSchema = new mongoose.Schema({
-    skillName: String, // e.g., "React Developer"
+    skillName: String,
     topics: [TopicSchema]
 });
 
@@ -53,9 +51,10 @@ const UserSchema = new mongoose.Schema({
     },
     skillProfile: [SkillProfileSchema],
     completedCourses: [{
-        courseName: String,
-        completedDate: { type: Date, default: Date.now }
-    }],
+      courseName: String,
+      completedDate: { type: Date, default: Date.now },
+      tasks: [TaskSchema]
+  }],
     date: { type: Date, default: Date.now },
 });
 

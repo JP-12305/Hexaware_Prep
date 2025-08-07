@@ -1,8 +1,7 @@
-// src/SignupForm.js
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { EyeIcon, EyeOffIcon } from './Icons';
+import Logo from './Logo';
 
 const SignupForm = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
@@ -52,11 +51,9 @@ const SignupForm = ({ onSwitchToLogin }) => {
       };
 
       try {
-        // MODIFIED: Use the full URL for the API call
         const res = await axios.post('http://localhost:5001/api/auth/register', newUser);
         console.log(res.data);
-        alert('Signup successful! Please log in.');
-        onSwitchToLogin(); // Switch to login form on success
+        onSwitchToLogin(); 
       } catch (err) {
         console.error(err.response ? err.response.data : err.message);
         alert('Error during signup: ' + (err.response ? err.response.data.msg : 'Registration failed.'));
@@ -67,7 +64,7 @@ const SignupForm = ({ onSwitchToLogin }) => {
   return (
     <div className="form-container">
       <div className="header">
-        <div className="logo-placeholder"></div>
+        <Logo />
         <h1 className="title">CREATE ACCOUNT</h1>
       </div>
       <form onSubmit={handleSubmit} noValidate>

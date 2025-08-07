@@ -10,7 +10,6 @@ const ManageUserPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // State for the new chained dropdowns
     const [selectedDept, setSelectedDept] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedSkill, setSelectedSkill] = useState('');
@@ -80,7 +79,6 @@ const ManageUserPage = () => {
             if (roleCategory) {
                 const newSkills = roleCategory.skills;
                 setAvailableSkills(newSkills);
-                // Only reset skill if the current one is not in the new list
                 if (!newSkills.includes(selectedSkill)) {
                     setSelectedSkill(newSkills[0] || '');
                 }
@@ -103,7 +101,6 @@ const ManageUserPage = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             await axios.put(`http://localhost:5001/api/admin/users/${userId}`, { department: selectedDept, role: selectedSkill }, config);
-            alert('User details saved!');
             fetchData();
         } catch (err) {
             alert('Failed to save changes.');
@@ -119,7 +116,10 @@ const ManageUserPage = () => {
             alert('Course assigned successfully!');
             fetchData();
         } catch (err) {
-            alert('Failed to assign course.');
+            const errorMessage = err.response && err.response.data && err.response.data.msg
+            ? err.response.data.msg
+            : 'Failed to assign course.';
+            alert(errorMessage);
         }
     };
 
@@ -129,7 +129,6 @@ const ManageUserPage = () => {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
                 await axios.delete(`http://localhost:5001/api/admin/users/${userId}/tasks/${taskId}`, config);
-                alert('Task removed successfully!');
                 fetchData();
             } catch (err) {
                 alert('Failed to remove task.');
@@ -143,7 +142,6 @@ const ManageUserPage = () => {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
                 await axios.delete(`http://localhost:5001/api/admin/users/${userId}/assign-course`, config);
-                alert('Course removed successfully.');
                 fetchData();
             } catch (err) {
                 alert('Failed to remove course.');
@@ -157,7 +155,6 @@ const ManageUserPage = () => {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
                 await axios.put(`http://localhost:5001/api/admin/users/${userId}/reset-assessment`, {}, config);
-                alert('Assessment has been reset. The user will be prompted to take it on their next login.');
                 fetchData();
             } catch (err) {
                 alert('Failed to reset assessment.');
@@ -165,12 +162,28 @@ const ManageUserPage = () => {
         }
     };
 
-    const handleAiSuggest = () => {
-        alert(`AI Agent: Suggesting learning path for a ${selectedSkill} in the ${selectedDept} department.`);
-    };
+    const handleGenerateReport = async () => {
+    try {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        const config = { 
+            headers: { Authorization: `Bearer ${userInfo.token}` },
+            responseType: 'blob', 
+        };
+        
+        const { data } = await axios.get(`http://localhost:5001/api/admin/users/${userId}/report`, config);
 
-    const handleGenerateReport = () => {
-        alert(`Generating performance report for ${user.username}...`);
+        const url = window.URL.createObjectURL(new Blob([data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${user.username}_report.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+
+        } catch (err) {
+            console.error("Failed to generate report", err);
+            alert('Failed to generate report.');
+        }
     };
 
     if (loading) return <div className="dashboard-loading"><h1>Loading User Details...</h1></div>;
@@ -279,12 +292,6 @@ const ManageUserPage = () => {
                             <p>No courses completed yet.</p>
                         )}
                     </ul>
-                </div>
-
-                <div className="card ai-card">
-                   <h3>AI Learning Assistant (Gemini)</h3>
-                    <p>Use AI to generate a personalized learning path based on the user's role and department.</p>
-                    <button onClick={handleAiSuggest} className="action-button-ai">Suggest Learning Path</button>
                 </div>
             </main>
         </div>

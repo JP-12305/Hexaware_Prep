@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { EyeIcon, EyeOffIcon } from './Icons';
+import Logo from './Logo';
 
 const LoginForm = ({ onSwitchToSignup }) => {
   const [formData, setFormData] = useState({
@@ -37,7 +38,6 @@ const LoginForm = ({ onSwitchToSignup }) => {
         
         localStorage.setItem('userInfo', JSON.stringify(data));
 
-        alert('Login successful!');
         
         if (data.user.role === 'admin') {
           window.location.href = '/admin';
@@ -55,7 +55,7 @@ const LoginForm = ({ onSwitchToSignup }) => {
   return (
     <div className="form-container">
       <div className="header">
-        <div className="logo-placeholder"></div>
+        <Logo />
         <h1 className="title">MEMBER LOGIN</h1>
       </div>
       <form onSubmit={handleSubmit} noValidate>

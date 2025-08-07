@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminDashboard.css';
-import './ManageUserPage.css'; // For some shared styles
+import './ManageUserPage.css'; 
 
 const CourseContentEditor = () => {
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [generating, setGenerating] = useState(null); // Track which module is generating
+    const [generating, setGenerating] = useState(null); 
 
     const courseId = window.location.pathname.split('/').pop();
 
@@ -33,8 +33,7 @@ const CourseContentEditor = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             await axios.post(`http://localhost:5001/api/courses/${courseId}/modules/${moduleId}/generate-content`, {}, config);
-            alert('Content generated successfully!');
-            fetchCourse(); // Refresh course data to show new content
+            fetchCourse(); 
         } catch (err) {
             alert('Failed to generate content.');
         } finally {
