@@ -1,17 +1,14 @@
-// src/LoginForm.js
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { EyeIcon, EyeOffIcon } from './Icons';
-import Logo from './Logo';
 
 const LoginForm = ({ onSwitchToSignup }) => {
-  const [formData, setFormData] = useState({
-    identifier: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ identifier: '', password: '' });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+
+  // Use the Environment Variable or fallback to localhost for dev
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
   const validate = () => {
     const newErrors = {};
@@ -28,72 +25,39 @@ const LoginForm = ({ onSwitchToSignup }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      const userCredentials = {
-        identifier: formData.identifier,
-        password: formData.password
-      };
-
       try {
-        const { data } = await axios.post('http://localhost:5001/api/auth/login', userCredentials);
+        // CHANGED: Use API_URL variable
+        const { data } = await axios.post(`${API_URL}/api/auth/login`, {
+          identifier: formData.identifier,
+          password: formData.password
+        });
         
         localStorage.setItem('userInfo', JSON.stringify(data));
-
-        
-        if (data.user.role === 'admin') {
-          window.location.href = '/admin';
-        } else {
-          window.location.href = '/dashboard';
-        }
+        window.location.href = data.user.role === 'admin' ? '/admin' : '/dashboard';
 
       } catch (err) {
-        console.error(err.response ? err.response.data : err.message);
-        alert('Login failed: ' + (err.response ? err.response.data.msg : 'Invalid Credentials'));
+        alert('Login failed: ' + (err.response?.data?.msg || 'Check your internet connection'));
       }
     }
   };
 
   return (
     <div className="form-container">
-      <div className="header">
-        <Logo />
-        <h1 className="title">MEMBER LOGIN</h1>
-      </div>
-      <form onSubmit={handleSubmit} noValidate>
+      <div className="header"><h1 className="title">MEMBER LOGIN</h1></div>
+      <form onSubmit={handleSubmit}>
         <div className="inputs-wrapper">
-          <div>
-            <input
-              type="text"
-              name="identifier"
-              placeholder="USERNAME OR EMAIL"
-              value={formData.identifier}
-              onChange={handleChange}
-              className="input-field"
-            />
-            {errors.identifier && <p className="error-message">{errors.identifier}</p>}
-          </div>
+          <input type="text" name="identifier" placeholder="USERNAME OR EMAIL" value={formData.identifier} onChange={handleChange} className="input-field" />
           <div className="password-wrapper">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              placeholder="PASSWORD"
-              value={formData.password}
-              onChange={handleChange}
-              className="input-field"
-            />
+            <input type={showPassword ? 'text' : 'password'} name="password" placeholder="PASSWORD" value={formData.password} onChange={handleChange} className="input-field" />
             <button type="button" onClick={() => setShowPassword(!showPassword)} className="password-toggle-btn">
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </button>
-            {errors.password && <p className="error-message">{errors.password}</p>}
           </div>
         </div>
-        <button type="submit" className="submit-btn">
-          LOGIN
-        </button>
+        <button type="submit" className="submit-btn">LOGIN</button>
       </form>
       <div className="switch-form-container">
-        <button onClick={onSwitchToSignup} className="switch-form-btn">
-          Create a new account? SIGNUP
-        </button>
+        <button onClick={onSwitchToSignup} className="switch-form-btn">Signup Instead</button>
       </div>
     </div>
   );
