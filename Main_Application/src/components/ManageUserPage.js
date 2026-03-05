@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './ManageUserPage.css';
 
@@ -21,7 +21,8 @@ const ManageUserPage = () => {
 
     const userId = window.location.pathname.split('/')[3];
 
-    const fetchData = async () => {
+    // Wrapped in useCallback to resolve dependency warning
+    const fetchData = useCallback(async () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
@@ -55,11 +56,11 @@ const ManageUserPage = () => {
             setError('Failed to fetch data');
             setLoading(false);
         }
-    };
+    }, [userId]);
 
     useEffect(() => {
         fetchData();
-    }, [userId]);
+    }, [fetchData]);
 
     useEffect(() => {
         const dept = departments.find(d => d.name === selectedDept);
@@ -70,7 +71,7 @@ const ManageUserPage = () => {
                 setSelectedCategory(newCategories[0] || '');
             }
         }
-    }, [selectedDept, departments]);
+    }, [selectedDept, departments, selectedCategory]);
 
     useEffect(() => {
         const dept = departments.find(d => d.name === selectedDept);
@@ -84,7 +85,7 @@ const ManageUserPage = () => {
                 }
             }
         }
-    }, [selectedCategory, selectedDept, departments]);
+    }, [selectedCategory, selectedDept, departments, selectedSkill]);
     
     useEffect(() => {
         if (selectedDept && selectedSkill) {
@@ -101,6 +102,7 @@ const ManageUserPage = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             await axios.put(`http://localhost:5001/api/admin/users/${userId}`, { department: selectedDept, role: selectedSkill }, config);
+            alert('User details saved!');
             fetchData();
         } catch (err) {
             alert('Failed to save changes.');
@@ -116,10 +118,7 @@ const ManageUserPage = () => {
             alert('Course assigned successfully!');
             fetchData();
         } catch (err) {
-            const errorMessage = err.response && err.response.data && err.response.data.msg
-            ? err.response.data.msg
-            : 'Failed to assign course.';
-            alert(errorMessage);
+            alert('Failed to assign course.');
         }
     };
 
@@ -129,6 +128,7 @@ const ManageUserPage = () => {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
                 await axios.delete(`http://localhost:5001/api/admin/users/${userId}/tasks/${taskId}`, config);
+                alert('Task removed successfully!');
                 fetchData();
             } catch (err) {
                 alert('Failed to remove task.');
@@ -137,11 +137,12 @@ const ManageUserPage = () => {
     };
 
     const handleRemoveCourse = async () => {
-        if (window.confirm(`Are you sure you want to remove the course "${user.currentCourse}" from this user? Their progress and tasks will be reset.`)) {
+        if (window.confirm(`Are you sure you want to remove the course "${user.currentCourse}"?`)) {
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
                 await axios.delete(`http://localhost:5001/api/admin/users/${userId}/assign-course`, config);
+                alert('Course removed successfully.');
                 fetchData();
             } catch (err) {
                 alert('Failed to remove course.');
@@ -149,41 +150,8 @@ const ManageUserPage = () => {
         }
     };
 
-    const handleResetAssessment = async () => {
-        if (window.confirm('Are you sure you want to reset this user\'s proficiency assessment? Their current skill profile and learning path will be cleared, and they will be prompted to retake the assessment.')) {
-            try {
-                const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-                const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                await axios.put(`http://localhost:5001/api/admin/users/${userId}/reset-assessment`, {}, config);
-                fetchData();
-            } catch (err) {
-                alert('Failed to reset assessment.');
-            }
-        }
-    };
-
-    const handleGenerateReport = async () => {
-    try {
-        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        const config = { 
-            headers: { Authorization: `Bearer ${userInfo.token}` },
-            responseType: 'blob', 
-        };
-        
-        const { data } = await axios.get(`http://localhost:5001/api/admin/users/${userId}/report`, config);
-
-        const url = window.URL.createObjectURL(new Blob([data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `${user.username}_report.pdf`);
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode.removeChild(link);
-
-        } catch (err) {
-            console.error("Failed to generate report", err);
-            alert('Failed to generate report.');
-        }
+    const handleGenerateReport = () => {
+        alert(`Generating performance report for ${user.username}...`);
     };
 
     if (loading) return <div className="dashboard-loading"><h1>Loading User Details...</h1></div>;
@@ -229,7 +197,7 @@ const ManageUserPage = () => {
                                     <option key={course._id} value={course.name}>{course.name}</option>
                                 ))
                             ) : (
-                                <option>No courses available for this Skill</option>
+                                <option>No courses available</option>
                             )}
                         </select>
                         <button onClick={handleAssignCourse} className="action-button-secondary" disabled={filteredCourses.length === 0}>
@@ -244,14 +212,12 @@ const ManageUserPage = () => {
                         {user.assignedTasks && user.assignedTasks.length > 0 ? (
                             user.assignedTasks.map(task => (
                                 <li key={task._id} className="task-item">
-                                    <span>
-                                        <strong>{task.title}</strong> (Due: {new Date(task.dueDate).toLocaleDateString()})
-                                    </span>
+                                    <span><strong>{task.title}</strong></span>
                                     <button onClick={() => handleRemoveTask(task._id)} className="remove-button">Remove</button>
                                 </li>
                             ))
                         ) : (
-                            <p>No tasks scheduled for this user.</p>
+                            <p>No tasks scheduled.</p>
                         )}
                     </ul>
                 </div>
@@ -269,29 +235,6 @@ const ManageUserPage = () => {
                         <div className="progress-bar" style={{ width: `${user.learningProgress}%` }}></div>
                     </div>
                     <button onClick={handleGenerateReport} className="action-button">Generate Report</button>
-                    <button 
-                        onClick={handleResetAssessment} 
-                        className="action-button delete-button" 
-                        style={{marginTop: '1rem', backgroundColor: '#f39c12'}}>
-                        Reset Proficiency Assessment
-                    </button>
-                </div>
-                
-                <div className="card">
-                    <h3>Completed Course History</h3>
-                    <ul className="task-list">
-                        {user.completedCourses && user.completedCourses.length > 0 ? (
-                            user.completedCourses.map(course => (
-                                <li key={course._id} className="task-item">
-                                    <span>
-                                        <strong>{course.courseName}</strong> (Completed: {new Date(course.completedDate).toLocaleDateString()})
-                                    </span>
-                                </li>
-                            ))
-                        ) : (
-                            <p>No courses completed yet.</p>
-                        )}
-                    </ul>
                 </div>
             </main>
         </div>

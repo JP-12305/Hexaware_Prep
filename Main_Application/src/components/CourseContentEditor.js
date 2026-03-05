@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './AdminDashboard.css';
 import './ManageUserPage.css'; 
@@ -10,7 +10,8 @@ const CourseContentEditor = () => {
 
     const courseId = window.location.pathname.split('/').pop();
 
-    const fetchCourse = async () => {
+    // Wrapped in useCallback to prevent re-creation on every render
+    const fetchCourse = useCallback(async () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
@@ -21,11 +22,11 @@ const CourseContentEditor = () => {
             console.error("Failed to fetch course details", err);
             setLoading(false);
         }
-    };
+    }, [courseId]);
 
     useEffect(() => {
         fetchCourse();
-    }, [courseId]);
+    }, [fetchCourse]); // fetchCourse is now a stable dependency
 
     const handleGenerateContent = async (moduleId) => {
         setGenerating(moduleId);
@@ -33,6 +34,7 @@ const CourseContentEditor = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             await axios.post(`http://localhost:5001/api/courses/${courseId}/modules/${moduleId}/generate-content`, {}, config);
+            alert('Content generated successfully!');
             fetchCourse(); 
         } catch (err) {
             alert('Failed to generate content.');
@@ -53,7 +55,7 @@ const CourseContentEditor = () => {
             <main className="dashboard-main">
                 <div className="user-table-container">
                     <h2>Course Modules</h2>
-                    <p>Generate learning materials for each module using the AI agent. The generated content will then be visible to learners.</p>
+                    <p>Generate learning materials for each module using the AI agent.</p>
                     <ul className="task-list-analytics">
                         {course.modules.map(module => (
                             <li key={module._id} className="module-editor-item">
